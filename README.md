@@ -11,6 +11,10 @@ Two important functions are provided for training and prediction:
 - `get_mixture_loss_func(output_dim, num_mixtures)`: This function generates a loss function with the correct output dimensiona and number of mixtures.
 - `sample_from_output(params, num_mixtures, output_dim, temp=1.0)`: This functions samples from the mixture distribution output by the model.
 
+## Examples
+
+Some examples are provided in the notebooks directory for solving standard MDN tasks (fitting multivalued functions). Hopefully there will be an RNN-MDN example soon.
+
 <img src="https://preview.ibb.co/mZzkpd/Keras_MDN_Demo.jpg" alt="Keras MDN Demo" border="0">
 
 ## How to use
