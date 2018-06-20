@@ -131,50 +131,13 @@ def get_mixture_mse_accuracy(output_dim, num_mixes):
         return mse_func
 
 
-# # Sample from Categorical distribution
-# def sample_mixture(mus, sigs, pis):
-#     """Sample from a mixture of 1D normal distributions parameterised by mus, sigma, and pi."""
-#     m = np.random.choice(range(len(pis)), p=pis)
-#     return(np.random.normal(mus[m],sigs[m],1))
-
 def split_mixture_params(params, mixtures, dim):
     """Splits up an array of mixture parameters into mus, sigmas, and pis
     depending on the number of mixtures and output dimension."""
     mus = params[:mixtures*dim]
     sigs = params[mixtures*dim:2*mixtures*dim]
-    pis = params[2*mixtures*dim:]
-    return mus, sigs, pis
-
-
-# TODO: Get rid of this function
-def adjust_temp(pi_pdf, temp):
-    """ Adjusts temperature of a PDF describing a categorical model """
-    pi_pdf = np.log(pi_pdf) / temp
-    pi_pdf -= pi_pdf.max()
-    pi_pdf = np.exp(pi_pdf)
-    pi_pdf /= pi_pdf.sum()
-    return pi_pdf
-
-
-# TODO: Get rid of this function
-def get_pi_idx(x, pdf, temp=1.0, greedy=False):
-    """Samples from a categorical model PDF, optionally greedily."""
-    if greedy:
-        return np.argmax(pdf)
-    pdf = adjust_temp(np.copy(pdf), temp)
-    accumulate = 0
-    for i in range(0, pdf.size):
-        accumulate += pdf[i]
-        if accumulate >= x:
-            return i
-    tf.logging.info('Error sampling mixture model.')
-    return -1
-
-
-def sample_from_categorical(dist, temp):
-    """Sample from a categorical model with temperature adjustment."""
-    r = np.random.rand(1)
-    return get_pi_idx(r,dist,temp)
+    pi_logits = params[-mixtures:]
+    return mus, sigs, pi_logits
 
 
 def softmax(w, t=1.0):
@@ -185,13 +148,17 @@ def softmax(w, t=1.0):
     dist = e / np.sum(e)
     return dist
 
-# def sample_from_output_1D(params, mixtures, dim, temp=1.0):
-#     """Sample from a 1D MDN output with temperature adjustment."""
-#     mus = params[:mixtures*dim]
-#     sigs = params[mixtures*dim:2*mixtures*dim]
-#     pis = params[-mixtures:]
-#     m = sample_from_categorical(pis, temp=temp)
-#     return(np.random.normal(mus[m],sigs[m],1))
+
+def sample_from_categorical(dist):
+    """Samples from a categorical model PDF."""
+    r = np.random.rand(1)  # uniform random number in [0,1]
+    accumulate = 0
+    for i in range(0, dist.size):
+        accumulate += dist[i]
+        if accumulate >= r:
+            return i
+    tf.logging.info('Error sampling mixture model.')
+    return -1
 
 
 def sample_from_output(params, mixtures, dim, temp=1.0):
@@ -199,7 +166,9 @@ def sample_from_output(params, mixtures, dim, temp=1.0):
     mus = params[:mixtures*dim]
     sigs = params[mixtures*dim:2*mixtures*dim]
     pis = softmax(params[-mixtures:], t=temp)
-    m = sample_from_categorical(pis, temp=temp)
+    m = sample_from_categorical(pis)
+    # Alternatively:
+    # m = np.random.choice(range(len(pis)), p=pis)
     mus_vector = mus[m*dim:(m+1)*dim]
     sig_vector = sigs[m*dim:(m+1)*dim]
     cov_matrix = np.identity(dim) * sig_vector
