@@ -27,9 +27,9 @@ class MDN(Layer):
     A sampling function is also provided to sample from distribution parametrised by the MDN outputs.
     """
 
-    def __init__(self, output_dim, num_mix, **kwargs):
-        self.output_dim = output_dim
-        self.num_mix = num_mix
+    def __init__(self, output_dimension, num_mixtures, **kwargs):
+        self.output_dim = output_dimension
+        self.num_mix = num_mixtures
         with tf.name_scope('MDN'):
             self.mdn_mus = Dense(self.num_mix * self.output_dim, name='mdn_mus')  # mix*output vals, no activation
             self.mdn_sigmas = Dense(self.num_mix * self.output_dim, activation=elu_plus_one_plus_epsilon, name='mdn_sigmas')  # mix*output vals exp activation
@@ -54,6 +54,14 @@ class MDN(Layer):
 
     def compute_output_shape(self, input_shape):
         return (input_shape[0], self.output_dim)
+
+    def get_config(self):
+        config = {
+            "output_dimension": self.output_dim,
+            "num_mixtures": self.num_mix
+        }
+        base_config = super(MDN, self).get_config()
+        return dict(list(base_config.items()) + list(config.items()))
 
 
 def get_mixture_loss_func(output_dim, num_mixes):
@@ -170,7 +178,7 @@ def sample_from_output(params, mixtures, dim, temp=1.0):
     # Alternatively:
     # m = np.random.choice(range(len(pis)), p=pis)
     mus_vector = mus[m*dim:(m+1)*dim]
-    sig_vector = sigs[m*dim:(m+1)*dim]
+    sig_vector = sigs[m*dim:(m+1)*dim] * temp  # adjust for temperature
     cov_matrix = np.identity(dim) * sig_vector
     sample = np.random.multivariate_normal(mus_vector, cov_matrix, 1)
     return sample
