@@ -1,3 +1,8 @@
+"""
+A Mixture Density Layer for Keras
+cpmpercussion: Charles Martin (University of Oslo) 2018
+https://github.com/cpmpercussion/keras-mdn-layer
+"""
 import keras
 from keras import backend as K
 from keras.layers import Dense
@@ -141,6 +146,7 @@ def split_mixture_params(params, mixtures, dim):
     return mus, sigs, pis
 
 
+# TODO: Get rid of this function
 def adjust_temp(pi_pdf, temp):
     """ Adjusts temperature of a PDF describing a categorical model """
     pi_pdf = np.log(pi_pdf) / temp
@@ -150,6 +156,7 @@ def adjust_temp(pi_pdf, temp):
     return pi_pdf
 
 
+# TODO: Get rid of this function
 def get_pi_idx(x, pdf, temp=1.0, greedy=False):
     """Samples from a categorical model PDF, optionally greedily."""
     if greedy:
@@ -171,8 +178,10 @@ def sample_from_categorical(dist, temp):
 
 
 def softmax(w, t=1.0):
-    """Softmax function for a list or numpy array of logits."""
-    e = np.exp(np.array(w) / t)
+    """Softmax function for a list or numpy array of logits. Also adjusts temperature."""
+    e = np.array(w) / t  # adjust temperature
+    e -= e.max()  # subtract max to protect from exploding exp values.
+    e = np.exp(e)
     dist = e / np.sum(e)
     return dist
 
