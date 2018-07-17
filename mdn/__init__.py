@@ -139,12 +139,12 @@ def get_mixture_mse_accuracy(output_dim, num_mixes):
         return mse_func
 
 
-def split_mixture_params(params, mixtures, dim):
+def split_mixture_params(params, output_dim, num_mixes):
     """Splits up an array of mixture parameters into mus, sigmas, and pis
     depending on the number of mixtures and output dimension."""
-    mus = params[:mixtures*dim]
-    sigs = params[mixtures*dim:2*mixtures*dim]
-    pi_logits = params[-mixtures:]
+    mus = params[:num_mixes*output_dim]
+    sigs = params[num_mixes*output_dim:2*num_mixes*output_dim]
+    pi_logits = params[-num_mixes:]
     return mus, sigs, pi_logits
 
 
@@ -169,16 +169,16 @@ def sample_from_categorical(dist):
     return -1
 
 
-def sample_from_output(params, mixtures, dim, temp=1.0):
+def sample_from_output(params, output_dim, num_mixes, temp=1.0):
     """Sample from an MDN output with temperature adjustment."""
-    mus = params[:mixtures*dim]
-    sigs = params[mixtures*dim:2*mixtures*dim]
-    pis = softmax(params[-mixtures:], t=temp)
+    mus = params[:num_mixes*output_dim]
+    sigs = params[num_mixes*output_dim:2*num_mixes*output_dim]
+    pis = softmax(params[-num_mixes:], t=temp)
     m = sample_from_categorical(pis)
-    # Alternatively:
+    # Alternative way to sample from categorical:
     # m = np.random.choice(range(len(pis)), p=pis)
-    mus_vector = mus[m*dim:(m+1)*dim]
-    sig_vector = sigs[m*dim:(m+1)*dim] * temp  # adjust for temperature
-    cov_matrix = np.identity(dim) * sig_vector
+    mus_vector = mus[m*output_dim:(m+1)*output_dim]
+    sig_vector = sigs[m*output_dim:(m+1)*output_dim] * temp  # adjust for temperature
+    cov_matrix = np.identity(output_dim) * sig_vector
     sample = np.random.multivariate_normal(mus_vector, cov_matrix, 1)
     return sample
