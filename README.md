@@ -21,10 +21,11 @@ There's scripts for fitting multivalued functions, a standard MDN toy problem:
 
 There's also a script for generating fake kanji characters:
 
-And finally, for learning how to generate musical touch-screen performances:
+<img src="https://image.ibb.co/hVTOw8/kanji_test_1.png" alt="kanji test 1" border="0" />
 
+And finally, for learning how to generate musical touch-screen performances with a temporal component:
 
-
+![Robojam Model Examples](https://preview.ibb.co/mpfa9T/robojam_examples.jpg)
 
 ## How to use
 
