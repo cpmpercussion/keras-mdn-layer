@@ -13,9 +13,18 @@ Two important functions are provided for training and prediction:
 
 ## Examples
 
-Some examples are provided in the notebooks directory for solving standard MDN tasks (fitting multivalued functions). Hopefully there will be an RNN-MDN example soon.
+Some examples are provided in the notebooks directory. 
+
+There's scripts for fitting multivalued functions, a standard MDN toy problem:
 
 <img src="https://preview.ibb.co/mZzkpd/Keras_MDN_Demo.jpg" alt="Keras MDN Demo" border="0">
+
+There's also a script for generating fake kanji characters:
+
+And finally, for learning how to generate musical touch-screen performances:
+
+
+
 
 ## How to use
 
@@ -44,10 +53,6 @@ The predictions from the network are parameters of the mixture models, so you ha
     y_samples = np.apply_along_axis(sample_from_output, 1, y_test, N_MIXES,OUTPUT_DIMS,temp=1.0)
 
 See the notebooks directory for examples in jupyter notebooks!
-
-## To do
-
-- More demos, including simple MDN-RNN projects
 
 ## Acknowledgements
 
