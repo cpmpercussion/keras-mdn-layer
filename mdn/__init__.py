@@ -10,9 +10,9 @@ from keras import backend as K
 from keras.layers import Dense
 from keras.engine.topology import Layer
 import numpy as np
-from tensorflow.contrib.distributions import Categorical, Mixture, MultivariateNormalDiag
 import tensorflow as tf
-
+import tensorflow_probability as tfp
+tfd = tfp.distributions
 
 def elu_plus_one_plus_epsilon(x):
     """ELU activation with a very small addition to help prevent NaN in loss."""
@@ -74,13 +74,13 @@ def get_mixture_loss_func(output_dim, num_mixes):
                                                                          num_mixes * output_dim,
                                                                          num_mixes],
                                              axis=1, name='mdn_coef_split')
-        cat = Categorical(logits=out_pi)
+        cat = tfd.Categorical(logits=out_pi)
         component_splits = [output_dim] * num_mixes
         mus = tf.split(out_mu, num_or_size_splits=component_splits, axis=1)
         sigs = tf.split(out_sigma, num_or_size_splits=component_splits, axis=1)
-        coll = [MultivariateNormalDiag(loc=loc, scale_diag=scale) for loc, scale
+        coll = [tfd.MultivariateNormalDiag(loc=loc, scale_diag=scale) for loc, scale
                 in zip(mus, sigs)]
-        mixture = Mixture(cat=cat, components=coll)
+        mixture = tfd.Mixture(cat=cat, components=coll)
         loss = mixture.log_prob(y_true)
         loss = tf.negative(loss)
         loss = tf.reduce_mean(loss)
@@ -99,13 +99,13 @@ def get_mixture_sampling_fun(output_dim, num_mixes):
                                                                          num_mixes * output_dim,
                                                                          num_mixes],
                                              axis=1, name='mdn_coef_split')
-        cat = Categorical(logits=out_pi)
+        cat = tfd.Categorical(logits=out_pi)
         component_splits = [output_dim] * num_mixes
         mus = tf.split(out_mu, num_or_size_splits=component_splits, axis=1)
         sigs = tf.split(out_sigma, num_or_size_splits=component_splits, axis=1)
-        coll = [MultivariateNormalDiag(loc=loc, scale_diag=scale) for loc, scale
+        coll = [tfd.MultivariateNormalDiag(loc=loc, scale_diag=scale) for loc, scale
                 in zip(mus, sigs)]
-        mixture = Mixture(cat=cat, components=coll)
+        mixture = tfd.Mixture(cat=cat, components=coll)
         samp = mixture.sample()
         # Todo: temperature adjustment for sampling function.
         return samp
@@ -124,13 +124,13 @@ def get_mixture_mse_accuracy(output_dim, num_mixes):
                                                                          num_mixes * output_dim,
                                                                          num_mixes],
                                              axis=1, name='mdn_coef_split')
-        cat = Categorical(logits=out_pi)
+        cat = tfd.Categorical(logits=out_pi)
         component_splits = [output_dim] * num_mixes
         mus = tf.split(out_mu, num_or_size_splits=component_splits, axis=1)
         sigs = tf.split(out_sigma, num_or_size_splits=component_splits, axis=1)
-        coll = [MultivariateNormalDiag(loc=loc, scale_diag=scale) for loc, scale
+        coll = [tfd.MultivariateNormalDiag(loc=loc, scale_diag=scale) for loc, scale
                 in zip(mus, sigs)]
-        mixture = Mixture(cat=cat, components=coll)
+        mixture = tfd.Mixture(cat=cat, components=coll)
         samp = mixture.sample()
         mse = tf.reduce_mean(tf.square(samp - y_true), axis=-1)
         # Todo: temperature adjustment for sampling functon.
