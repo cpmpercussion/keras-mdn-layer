@@ -9,11 +9,11 @@ One benefit of this implementation is that you can predict any number of real-va
 Two important functions are provided for training and prediction:
 
 - `get_mixture_loss_func(output_dim, num_mixtures)`: This function generates a loss function with the correct output dimensiona and number of mixtures.
-- `sample_from_output(params, num_mixtures, output_dim, temp=1.0)`: This functions samples from the mixture distribution output by the model.
+- `sample_from_output(params, output_dim, num_mixtures, temp=1.0)`: This functions samples from the mixture distribution output by the model.
 
 ## Examples
 
-Some examples are provided in the notebooks directory. 
+Some examples are provided in the notebooks directory.
 
 There's scripts for fitting multivalued functions, a standard MDN toy problem:
 
@@ -51,7 +51,7 @@ Fit as normal:
 The predictions from the network are parameters of the mixture models, so you have to apply the `sample_from_output` function to generate samples.
 
     y_test = model.predict(x_test)
-    y_samples = np.apply_along_axis(sample_from_output, 1, y_test, N_MIXES,OUTPUT_DIMS,temp=1.0)
+    y_samples = np.apply_along_axis(sample_from_output, 1, y_test, OUTPUT_DIMS, N_MIXES, temp=1.0)
 
 See the notebooks directory for examples in jupyter notebooks!
 
