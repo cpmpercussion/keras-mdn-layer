@@ -98,8 +98,10 @@ def get_mixture_loss_func(output_dim, num_mixes):
 
 
 def get_mixture_sampling_fun(output_dim, num_mixes):
-    """Construct a sampling function for the MDN layer parametrised by mixtures and output dimension."""
-    # Construct a loss function with the right number of mixtures and outputs
+    """Construct a TensorFlor sampling operation for the MDN layer parametrised
+    by mixtures and output dimension. This can be used in a Keras model to
+    generate samples directly."""
+
     def sampling_func(y_pred):
         # Reshape inputs in case this is used in a TimeDistribued layer
         y_pred = tf.reshape(y_pred, [-1, (2 * num_mixes * output_dim) + num_mixes], name='reshape_ypreds')
@@ -183,7 +185,9 @@ def sample_from_categorical(dist):
 
 
 def sample_from_output(params, output_dim, num_mixes, temp=1.0):
-    """Sample from an MDN output with temperature adjustment."""
+    """Sample from an MDN output with temperature adjustment.
+    This calculation is done outside of the Keras model using
+    Numpy."""
     mus = params[:num_mixes*output_dim]
     sigs = params[num_mixes*output_dim:2*num_mixes*output_dim]
     pis = softmax(params[-num_mixes:], t=temp)
