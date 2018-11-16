@@ -98,8 +98,10 @@ def get_mixture_loss_func(output_dim, num_mixes):
 
 
 def get_mixture_sampling_fun(output_dim, num_mixes):
-    """Construct a sampling function for the MDN layer parametrised by mixtures and output dimension."""
-    # Construct a loss function with the right number of mixtures and outputs
+    """Construct a TensorFlor sampling operation for the MDN layer parametrised
+    by mixtures and output dimension. This can be used in a Keras model to
+    generate samples directly."""
+
     def sampling_func(y_pred):
         # Reshape inputs in case this is used in a TimeDistribued layer
         y_pred = tf.reshape(y_pred, [-1, (2 * num_mixes * output_dim) + num_mixes], name='reshape_ypreds')
@@ -154,7 +156,13 @@ def get_mixture_mse_accuracy(output_dim, num_mixes):
 
 def split_mixture_params(params, output_dim, num_mixes):
     """Splits up an array of mixture parameters into mus, sigmas, and pis
-    depending on the number of mixtures and output dimension."""
+    depending on the number of mixtures and output dimension.
+
+    Arguments:
+    params -- the parameters of the mixture model
+    output_dim -- the dimension of the normal models in the mixture model
+    num_mixes -- the number of mixtures represented
+    """
     mus = params[:num_mixes*output_dim]
     sigs = params[num_mixes*output_dim:2*num_mixes*output_dim]
     pi_logits = params[-num_mixes:]
@@ -162,7 +170,14 @@ def split_mixture_params(params, output_dim, num_mixes):
 
 
 def softmax(w, t=1.0):
-    """Softmax function for a list or numpy array of logits. Also adjusts temperature."""
+    """Softmax function for a list or numpy array of logits. Also adjusts temperature.
+
+    Arguments:
+    w -- a list or numpy array of logits
+
+    Keyword arguments:
+    t -- the temperature for to adjust the distribution (default 1.0)
+    """
     e = np.array(w) / t  # adjust temperature
     e -= e.max()  # subtract max to protect from exploding exp values.
     e = np.exp(e)
@@ -171,27 +186,48 @@ def softmax(w, t=1.0):
 
 
 def sample_from_categorical(dist):
-    """Samples from a categorical model PDF."""
+    """Samples from a categorical model PDF.
+
+    Arguments:
+    dist -- the parameters of the categorical model
+
+    Returns:
+    One sample from the categorical model, or -1 if sampling fails.
+    """
     r = np.random.rand(1)  # uniform random number in [0,1]
     accumulate = 0
     for i in range(0, dist.size):
         accumulate += dist[i]
         if accumulate >= r:
             return i
-    tf.logging.info('Error sampling mixture model.')
+    tf.logging.info('Error sampling categorical model.')
     return -1
 
 
-def sample_from_output(params, output_dim, num_mixes, temp=1.0):
-    """Sample from an MDN output with temperature adjustment."""
-    mus = params[:num_mixes*output_dim]
-    sigs = params[num_mixes*output_dim:2*num_mixes*output_dim]
-    pis = softmax(params[-num_mixes:], t=temp)
+def sample_from_output(params, output_dim, num_mixes, temp=1.0, sigma_temp=1.0):
+    """Sample from an MDN output with temperature adjustment.
+    This calculation is done outside of the Keras model using
+    Numpy.
+    
+    Arguments:
+    params -- the parameters of the mixture model
+    output_dim -- the dimension of the normal models in the mixture model
+    num_mixes -- the number of mixtures represented
+
+    Keyword arguments:
+    temp -- the temperature for sampling between mixture components (default 1.0)
+    sigma_temp -- the temperature for sampling from the normal distribution (default 1.0)
+
+    Returns:
+    One sample from the the mixture model.
+    """
+    mus, sigs, pi_logits = split_mixture_params(params, output_dim, num_mixes)
+    pis = softmax(pi_logits, t=temp)
     m = sample_from_categorical(pis)
     # Alternative way to sample from categorical:
     # m = np.random.choice(range(len(pis)), p=pis)
     mus_vector = mus[m*output_dim:(m+1)*output_dim]
-    sig_vector = sigs[m*output_dim:(m+1)*output_dim] * temp  # adjust for temperature
+    sig_vector = sigs[m*output_dim:(m+1)*output_dim] * sigma_temp  # adjust for temperature
     cov_matrix = np.identity(output_dim) * sig_vector
     sample = np.random.multivariate_normal(mus_vector, cov_matrix, 1)
     return sample
