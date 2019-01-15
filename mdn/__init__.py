@@ -14,9 +14,10 @@ import tensorflow as tf
 import tensorflow_probability as tfp
 tfd = tfp.distributions
 
+
 def elu_plus_one_plus_epsilon(x):
     """ELU activation with a very small addition to help prevent NaN in loss."""
-    return (K.elu(x) + 1 + 1e-8)
+    return K.elu(x) + 1 + K.epsilon()
 
 
 class MDN(Layer):
