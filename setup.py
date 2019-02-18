@@ -24,7 +24,7 @@ setup(
     author_email='charlepm@ifi.uio.no',
     url='https://github.com/cpmpercussion/keras-mdn-layer',
     license='MIT',
-    py_modules=['mdn'],
+    packages=['mdn'],
     include_package_data=True,
     classifiers=[
         'Topic :: Scientific/Engineering :: Artificial Intelligence',
