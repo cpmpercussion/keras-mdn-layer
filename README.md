@@ -23,6 +23,8 @@ You can easily install this package directly from Github via `pip` like so:
 
     pip install git+git://github.com/cpmpercussion/keras-mdn-layer.git#egg=keras-mdn-layer
 
+And finally, import the `mdn` module in Python: `import mdn`
+
 ## Examples
 
 Some examples are provided in the notebooks directory.
