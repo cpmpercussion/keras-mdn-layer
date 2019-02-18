@@ -3,7 +3,8 @@ A Mixture Density Layer for Keras
 cpmpercussion: Charles Martin (University of Oslo) 2018
 https://github.com/cpmpercussion/keras-mdn-layer
 
-Hat tip to [Omimo's Keras MDN layer](https://github.com/omimo/Keras-MDN) for a starting point for this code.
+Hat tip to [Omimo's Keras MDN layer](https://github.com/omimo/Keras-MDN)
+for a starting point for this code.
 
 Provided under MIT License
 """
@@ -19,7 +20,8 @@ tfd = tfp.distributions
 
 
 def elu_plus_one_plus_epsilon(x):
-    """ELU activation with a very small addition to help prevent NaN in loss."""
+    """ELU activation with a very small addition to help prevent
+    NaN in loss."""
     return K.elu(x) + 1 + K.epsilon()
 
 
@@ -167,8 +169,8 @@ def split_mixture_params(params, output_dim, num_mixes):
     output_dim -- the dimension of the normal models in the mixture model
     num_mixes -- the number of mixtures represented
     """
-    mus = params[:num_mixes*output_dim]
-    sigs = params[num_mixes*output_dim:2*num_mixes*output_dim]
+    mus = params[:num_mixes * output_dim]
+    sigs = params[num_mixes * output_dim:2 * num_mixes * output_dim]
     pi_logits = params[-num_mixes:]
     return mus, sigs, pi_logits
 
@@ -212,7 +214,7 @@ def sample_from_output(params, output_dim, num_mixes, temp=1.0, sigma_temp=1.0):
     """Sample from an MDN output with temperature adjustment.
     This calculation is done outside of the Keras model using
     Numpy.
-    
+
     Arguments:
     params -- the parameters of the mixture model
     output_dim -- the dimension of the normal models in the mixture model
@@ -230,8 +232,8 @@ def sample_from_output(params, output_dim, num_mixes, temp=1.0, sigma_temp=1.0):
     m = sample_from_categorical(pis)
     # Alternative way to sample from categorical:
     # m = np.random.choice(range(len(pis)), p=pis)
-    mus_vector = mus[m*output_dim:(m+1)*output_dim]
-    sig_vector = sigs[m*output_dim:(m+1)*output_dim] * sigma_temp  # adjust for temperature
+    mus_vector = mus[m * output_dim:(m + 1) * output_dim]
+    sig_vector = sigs[m * output_dim:(m + 1) * output_dim] * sigma_temp  # adjust for temperature
     cov_matrix = np.identity(output_dim) * sig_vector
     sample = np.random.multivariate_normal(mus_vector, cov_matrix, 1)
     return sample
