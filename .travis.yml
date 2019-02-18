@@ -8,11 +8,12 @@ python:
   - 3.6
 
 install:
+  - pip install pycodestyle
   - pip install -r requirements.txt
 
 script:
-  - pycodestyle keras-mdn-layer
-  - pytest --verbose --capture=no keras-mdn-layer
+  - pycodestyle mdn
+  - pytest --verbose --capture=no mdn
   - pip install .
 
 notifications:
