@@ -15,6 +15,14 @@ Two important functions are provided for training and prediction:
 - `get_mixture_loss_func(output_dim, num_mixtures)`: This function generates a loss function with the correct output dimensiona and number of mixtures.
 - `sample_from_output(params, output_dim, num_mixtures, temp=1.0)`: This functions samples from the mixture distribution output by the model.
 
+## Installation 
+
+You clone or download this repository and then install via `python setup.py install`, or copy the `mdn` folder into your own project.
+
+You can easily install this package directly from Github via `pip` like so:
+
+    pip install git+git://github.com/cpmpercussion/keras-mdn-layer.git#egg=keras-mdn-layer
+
 ## Examples
 
 Some examples are provided in the notebooks directory.
