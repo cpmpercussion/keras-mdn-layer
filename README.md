@@ -1,5 +1,6 @@
 # Keras Mixture Density Network Layer
 
+[![Build Status](https://travis-ci.com/cpmpercussion/keras-mdn-layer.svg?branch=master)](https://travis-ci.com/cpmpercussion/keras-mdn-layer)
 ![MIT License](https://img.shields.io/github/license/cpmpercussion/keras-mdn-layer.svg?style=flat)
 [![DOI](https://zenodo.org/badge/137585470.svg)](https://zenodo.org/badge/latestdoi/137585470)
 
