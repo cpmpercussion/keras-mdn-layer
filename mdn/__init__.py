@@ -4,7 +4,10 @@ cpmpercussion: Charles Martin (University of Oslo) 2018
 https://github.com/cpmpercussion/keras-mdn-layer
 
 Hat tip to [Omimo's Keras MDN layer](https://github.com/omimo/Keras-MDN) for a starting point for this code.
+
+Provided under MIT License
 """
+from version import __version__
 import keras
 from keras import backend as K
 from keras.layers import Dense
