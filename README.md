@@ -39,7 +39,7 @@ There's also a script for generating fake kanji characters:
 
 And finally, for learning how to generate musical touch-screen performances with a temporal component:
 
-<img src="https://i.ibb.co/zr0Z0b0/robojam-examples.png" alt="Robojam Model Examples" border="0">
+<img src="https://i.ibb.co/WpzSCV8/robojam-examples.png" alt="Robojam Model Examples" border="0">
 
 ## How to use
 
