@@ -96,9 +96,8 @@ def get_mixture_loss_func(output_dim, num_mixes):
         component_splits = [output_dim] * num_mixes
         mus = tf.split(out_mu, num_or_size_splits=component_splits, axis=1)
         sigs = tf.split(out_sigma, num_or_size_splits=component_splits, axis=1)
-        coll = [tfd.MultivariateNormalDiag(loc=loc, scale_diag=scale) for loc, scale
-                in zip(mus, sigs)]
-        mixture = tfd.Mixture(cat=cat, components=coll)
+        comps = tfd.MultivariateNormalDiag(loc=mus, scale_diag=sigs)
+        mixture = tfd.MixtureSameFamily(mixture_distribution=cat, components_distribution=comps)
         loss = mixture.log_prob(y_true)
         loss = tf.negative(loss)
         loss = tf.reduce_mean(loss)
@@ -125,9 +124,8 @@ def get_mixture_sampling_fun(output_dim, num_mixes):
         component_splits = [output_dim] * num_mixes
         mus = tf.split(out_mu, num_or_size_splits=component_splits, axis=1)
         sigs = tf.split(out_sigma, num_or_size_splits=component_splits, axis=1)
-        coll = [tfd.MultivariateNormalDiag(loc=loc, scale_diag=scale) for loc, scale
-                in zip(mus, sigs)]
-        mixture = tfd.Mixture(cat=cat, components=coll)
+        comps = tfd.MultivariateNormalDiag(loc=mus, scale_diag=sigs)
+        mixture = tfd.MixtureSameFamily(mixture_distribution=cat, components_distribution=comps)
         samp = mixture.sample()
         # Todo: temperature adjustment for sampling function.
         return samp
@@ -153,9 +151,8 @@ def get_mixture_mse_accuracy(output_dim, num_mixes):
         component_splits = [output_dim] * num_mixes
         mus = tf.split(out_mu, num_or_size_splits=component_splits, axis=1)
         sigs = tf.split(out_sigma, num_or_size_splits=component_splits, axis=1)
-        coll = [tfd.MultivariateNormalDiag(loc=loc, scale_diag=scale) for loc, scale
-                in zip(mus, sigs)]
-        mixture = tfd.Mixture(cat=cat, components=coll)
+        comps = tfd.MultivariateNormalDiag(loc=mus, scale_diag=sigs)
+        mixture = tfd.MixtureSameFamily(mixture_distribution=cat, components_distribution=comps)
         samp = mixture.sample()
         mse = tf.reduce_mean(tf.square(samp - y_true), axis=-1)
         # Todo: temperature adjustment for sampling functon.
