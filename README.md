@@ -17,11 +17,12 @@ Two important functions are provided for training and prediction:
 
 ## Installation 
 
-You clone or download this repository and then install via `python setup.py install`, or copy the `mdn` folder into your own project.
+This project requires Python 3.6+. You can clone or download this repository and then install via `python setup.py install`, or copy the `mdn` folder into your own project. 
 
 You can easily install this package directly from Github via `pip` like so:
 
     pip install git+git://github.com/cpmpercussion/keras-mdn-layer.git#egg=keras-mdn-layer
+    
 
 And finally, import the `mdn` module in Python: `import mdn`
 
