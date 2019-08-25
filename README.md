@@ -3,6 +3,7 @@
 [![Build Status](https://travis-ci.com/cpmpercussion/keras-mdn-layer.svg?branch=master)](https://travis-ci.com/cpmpercussion/keras-mdn-layer)
 ![MIT License](https://img.shields.io/github/license/cpmpercussion/keras-mdn-layer.svg?style=flat)
 [![DOI](https://zenodo.org/badge/137585470.svg)](https://zenodo.org/badge/latestdoi/137585470)
+[![PyPI version](https://badge.fury.io/py/keras-mdn-layer.svg)](https://badge.fury.io/py/keras-mdn-layer)
 
 A mixture density network (MDN) Layer for Keras using TensorFlow's distributions module. This makes it a bit more simple to experiment with neural networks that predict multiple real-valued variables that can take on multiple equally likely values.
 
@@ -17,14 +18,13 @@ Two important functions are provided for training and prediction:
 
 ## Installation 
 
-This project requires Python 3.6+. You can clone or download this repository and then install via `python setup.py install`, or copy the `mdn` folder into your own project. 
+This project requires Python 3.6+. You can easily install this package from [PyPI](https://pypi.org/project/keras-mdn-layer/) via `pip` like so:
 
-You can easily install this package directly from Github via `pip` like so:
-
-    pip install git+git://github.com/cpmpercussion/keras-mdn-layer.git#egg=keras-mdn-layer
-    
+    python3 -m pip install keras-mdn-layer
 
 And finally, import the `mdn` module in Python: `import mdn`
+
+Alternatively, you can clone or download this repository and then install via `python setup.py install`, or copy the `mdn` folder into your own project.
 
 ## Examples
 
