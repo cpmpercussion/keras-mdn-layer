@@ -20,6 +20,7 @@ setup(
     version=version['__version__'],
     description=('An MDN Layer for Keras using TensorFlow Probability.'),
     long_description=long_description,
+    long_description_content_type="text/markdown",
     author='Charles Martin',
     author_email='charlepm@ifi.uio.no',
     url='https://github.com/cpmpercussion/keras-mdn-layer',
@@ -30,7 +31,6 @@ setup(
         'Topic :: Scientific/Engineering :: Artificial Intelligence',
         'Development Status :: 2 - Pre-Alpha',
         'Intended Audience :: Science/Research',
-        'Programming Language :: Python :: 2.7',
-        'Programming Language :: Python :: 3.6',
-        'License :: OSI Approved :: MIT Licese'],
+        'Programming Language :: Python :: 3',
+        'License :: OSI Approved :: MIT License'],
     )
