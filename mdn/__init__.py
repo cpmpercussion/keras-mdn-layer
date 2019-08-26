@@ -72,11 +72,15 @@ class MDN(Layer):
         base_config = super(MDN, self).get_config()
         return dict(list(base_config.items()) + list(config.items()))
 
+    # @classmethod
+    # def from_config(cls, config):
+    #     return cls(**config)
+
 
 def get_mixture_loss_func(output_dim, num_mixes):
     """Construct a loss functions for the MDN layer parametrised by number of mixtures."""
     # Construct a loss function with the right number of mixtures and outputs
-    def loss_func(y_true, y_pred):
+    def mdn_loss_func(y_true, y_pred):
         # Reshape inputs in case this is used in a TimeDistribued layer
         y_pred = tf.reshape(y_pred, [-1, (2 * num_mixes * output_dim) + num_mixes], name='reshape_ypreds')
         y_true = tf.reshape(y_true, [-1, output_dim], name='reshape_ytrue')
@@ -98,9 +102,9 @@ def get_mixture_loss_func(output_dim, num_mixes):
         loss = tf.reduce_mean(loss)
         return loss
 
-    # Actually return the loss_func
+    # Actually return the loss function
     with tf.name_scope('MDN'):
-        return loss_func
+        return mdn_loss_func
 
 
 def get_mixture_sampling_fun(output_dim, num_mixes):
