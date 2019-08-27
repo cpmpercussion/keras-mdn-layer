@@ -70,6 +70,17 @@ The predictions from the network are parameters of the mixture models, so you ha
 
 See the notebooks directory for examples in jupyter notebooks!
 
+### Load/Save Model
+
+Saving models is straight forward:
+
+    model.save('test_save.h5')
+
+But loading requires `cutom_objects` to be filled with the MDN layer, and a loss function with the appropriate parameters:
+
+    m_2 = keras.models.load_model('test_save.h5', custom_objects={'MDN': mdn.MDN, 'mdn_loss_func': mdn.get_mixture_loss_func(1, N_MIXES)})
+
+
 ## Acknowledgements
 
 - Hat tip to [Omimo's Keras MDN layer](https://github.com/omimo/Keras-MDN) for a starting point for this code.
