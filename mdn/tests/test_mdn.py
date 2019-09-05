@@ -1,4 +1,4 @@
-import keras
+from tensorflow import keras
 import mdn
 import numpy as np
 
@@ -12,7 +12,7 @@ def test_build_mdn():
     model.add(keras.layers.Dense(N_HIDDEN, activation='relu'))
     model.add(mdn.MDN(1, N_MIXES))
     model.compile(loss=mdn.get_mixture_loss_func(1, N_MIXES), optimizer=keras.optimizers.Adam())
-    assert isinstance(model, keras.engine.sequential.Sequential)
+    assert isinstance(model, keras.Sequential)
 
 
 def test_number_of_weights():
@@ -39,4 +39,4 @@ def test_save_mdn():
     model.compile(loss=mdn.get_mixture_loss_func(1, N_MIXES), optimizer=keras.optimizers.Adam())
     model.save('test_save.h5')
     m_2 = keras.models.load_model('test_save.h5', custom_objects={'MDN': mdn.MDN, 'mdn_loss_func': mdn.get_mixture_loss_func(1, N_MIXES)})
-    assert isinstance(m_2, keras.engine.sequential.Sequential)
+    assert isinstance(m_2, keras.Sequential)
