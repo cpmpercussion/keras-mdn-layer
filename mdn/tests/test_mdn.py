@@ -1,8 +1,10 @@
 import keras
 import mdn
+import numpy as np
 
 
 def test_build_mdn():
+    """Make sure an MDN model can be constructed"""
     N_HIDDEN = 5
     N_MIXES = 5
     model = keras.Sequential()
@@ -13,7 +15,22 @@ def test_build_mdn():
     assert isinstance(model, keras.engine.sequential.Sequential)
 
 
+def test_number_of_weights():
+    """Make sure the number of trainable weights is set up correctly"""
+    N_HIDDEN = 5
+    N_MIXES = 5
+    inputs = keras.layers.Input(shape=(1,))
+    x = keras.layers.Dense(N_HIDDEN, activation='relu')(inputs)
+    m = mdn.MDN(1, N_MIXES)
+    predictions = m(x)
+    model = keras.Model(inputs=inputs, outputs=predictions)
+    model.compile(loss=mdn.get_mixture_loss_func(1, N_MIXES), optimizer=keras.optimizers.Adam())
+    num_mdn_params = np.sum([w.get_shape().num_elements() for w in m.trainable_weights])
+    assert (num_mdn_params == 90)
+
+
 def test_save_mdn():
+    """Make sure an MDN model can be saved and loaded"""
     N_HIDDEN = 5
     N_MIXES = 5
     model = keras.Sequential()

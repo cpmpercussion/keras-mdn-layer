@@ -48,9 +48,15 @@ class MDN(Layer):
         self.mdn_mus.build(input_shape)
         self.mdn_sigmas.build(input_shape)
         self.mdn_pi.build(input_shape)
-        self.trainable_weights = self.mdn_mus.trainable_weights + self.mdn_sigmas.trainable_weights + self.mdn_pi.trainable_weights
-        self.non_trainable_weights = self.mdn_mus.non_trainable_weights + self.mdn_sigmas.non_trainable_weights + self.mdn_pi.non_trainable_weights
         super(MDN, self).build(input_shape)
+
+    @property
+    def trainable_weights(self):
+        return self.mdn_mus.trainable_weights + self.mdn_sigmas.trainable_weights + self.mdn_pi.trainable_weights
+
+    @property
+    def non_trainable_weights(self):
+        return self.mdn_mus.non_trainable_weights + self.mdn_sigmas.non_trainable_weights + self.mdn_pi.non_trainable_weights
 
     def call(self, x, mask=None):
         with tf.name_scope('MDN'):
