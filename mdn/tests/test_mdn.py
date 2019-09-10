@@ -40,3 +40,27 @@ def test_save_mdn():
     model.save('test_save.h5')
     m_2 = keras.models.load_model('test_save.h5', custom_objects={'MDN': mdn.MDN, 'mdn_loss_func': mdn.get_mixture_loss_func(1, N_MIXES)})
     assert isinstance(m_2, keras.engine.sequential.Sequential)
+
+
+def test_training_ann_one_epoch():
+    """Trains a small feed-forward model for one epoch."""
+    NSAMPLE = 100
+    y_data = np.float32(np.random.uniform(-10.5, 10.5, NSAMPLE))
+    r_data = np.random.normal(size=NSAMPLE)
+    x_data = np.sin(0.75 * y_data) * 7.0 + y_data * 0.5 + r_data * 1.0
+    x_data = x_data.reshape((NSAMPLE, 1))
+    N_HIDDEN = 5
+    N_MIXES = 5
+    model = keras.Sequential()
+    model.add(keras.layers.Dense(N_HIDDEN, batch_input_shape=(None, 1), activation='relu'))
+    model.add(keras.layers.Dense(N_HIDDEN, activation='relu'))
+    model.add(mdn.MDN(1, N_MIXES))
+    model.compile(loss=mdn.get_mixture_loss_func(1, N_MIXES), optimizer=keras.optimizers.Adam())
+    history = model.fit(x=x_data, y=y_data, batch_size=128, epochs=1, validation_split=0.15)
+    assert isinstance(history, keras.callbacks.History)
+
+
+# def test_training_rnn_one_epoch():
+
+
+# def test_training_tf_rnn_one_epoch():
