@@ -61,6 +61,26 @@ def test_training_ann_one_epoch():
 
 
 def test_training_rnn_one_epoch():
+    # Training Hyperparameters:
+    SEQ_LEN = 30
+    BATCH_SIZE = 64
+    HIDDEN_UNITS = 32
+    EPOCHS = 1
+    OUTPUT_DIMENSION = 4
+    NUMBER_MIXTURES = 5
+    # make neural network
+    model = keras.Sequential()
+    model.add(keras.layers.LSTM(HIDDEN_UNITS, batch_input_shape=(None,SEQ_LEN,OUTPUT_DIMENSION), return_sequences=True))
+    model.add(keras.layers.LSTM(HIDDEN_UNITS))
+    model.add(mdn.MDN(OUTPUT_DIMENSION, NUMBER_MIXTURES))
+    model.compile(loss=mdn.get_mixture_loss_func(OUTPUT_DIMENSION,NUMBER_MIXTURES), optimizer=keras.optimizers.Adam())
+    model.summary()
+    # make fake data
+    X = np.random.rand(BATCH_SIZE*10, SEQ_LEN, OUTPUT_DIMENSION)
+    y = np.random.rand(BATCH_SIZE*10, OUTPUT_DIMENSION)
+    # train for one epoch
+    history = model.fit(X, y, batch_size=BATCH_SIZE, epochs=EPOCHS)
+    assert isinstance(history, keras.callbacks.History)
 
 
 def test_training_tf_td_rnn_one_epoch():
