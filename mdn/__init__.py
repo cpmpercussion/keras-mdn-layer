@@ -94,8 +94,10 @@ def get_mixture_loss_func(output_dim, num_mixes):
         # Construct the mixture models
         cat = tfd.Categorical(logits=out_pi)
         component_splits = [output_dim] * num_mixes
-        mus = tf.split(out_mu, num_or_size_splits=component_splits, axis=1)
-        sigs = tf.split(out_sigma, num_or_size_splits=component_splits, axis=1)
+        # mus = tf.split(out_mu, num_or_size_splits=component_splits, axis=1)
+        mus = tf.reshape(out_mu, [-1, num_mixes, output_dim])
+        # sigs = tf.split(out_sigma, num_or_size_splits=component_splits, axis=1)
+        sigs = tf.reshape(out_sigma, [-1, num_mixes, output_dim])
         comps = tfd.MultivariateNormalDiag(loc=mus, scale_diag=sigs)
         mixture = tfd.MixtureSameFamily(mixture_distribution=cat, components_distribution=comps)
         loss = mixture.log_prob(y_true)
