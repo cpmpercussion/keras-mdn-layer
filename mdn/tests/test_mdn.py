@@ -60,7 +60,26 @@ def test_training_ann_one_epoch():
     assert isinstance(history, keras.callbacks.History)
 
 
-# def test_training_rnn_one_epoch():
+def test_training_rnn_one_epoch():
 
 
-# def test_training_tf_rnn_one_epoch():
+def test_training_tf_td_rnn_one_epoch():
+    SEQ_LEN = 10
+    BATCH_SIZE = 64
+    HIDDEN_UNITS = 32
+    EPOCHS = 1
+    OUTPUT_DIMENSION = 3
+    NUMBER_MIXTURES = 10
+    # make fake data
+    X = np.random.rand(BATCH_SIZE*10, SEQ_LEN, OUTPUT_DIMENSION)
+    y = np.random.rand(BATCH_SIZE*10, SEQ_LEN, OUTPUT_DIMENSION)
+    # setup network
+    inputs = keras.layers.Input(shape=(SEQ_LEN, OUTPUT_DIMENSION), name='inputs')
+    lstm1_out = keras.layers.LSTM(HIDDEN_UNITS, name='lstm1', return_sequences=True)(inputs)
+    lstm2_out = keras.layers.LSTM(HIDDEN_UNITS, name='lstm2', return_sequences=True)(lstm1_out)
+    mdn_out = keras.layers.TimeDistributed(mdn.MDN(OUTPUT_DIMENSION, NUMBER_MIXTURES, name='mdn_outputs'), name='td_mdn')(lstm2_out)
+    model = keras.models.Model(inputs=inputs, outputs=mdn_out)
+    model.compile(loss=mdn.get_mixture_loss_func(OUTPUT_DIMENSION, NUMBER_MIXTURES), optimizer='adam')
+    model.summary()
+    history = model.fit(X, y, batch_size=BATCH_SIZE, epochs=EPOCHS)
+    assert isinstance(history, keras.callbacks.History)
