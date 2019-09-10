@@ -83,7 +83,7 @@ def get_mixture_loss_func(output_dim, num_mixes):
     """Construct a loss functions for the MDN layer parametrised by number of mixtures."""
     # Construct a loss function with the right number of mixtures and outputs
     def mdn_loss_func(y_true, y_pred):
-        # Reshape inputs in case this is used in a TimeDistribued layer
+        # Reshape inputs in case this is used in a TimeDistributed layer
         y_pred = tf.reshape(y_pred, [-1, (2 * num_mixes * output_dim) + num_mixes], name='reshape_ypreds')
         y_true = tf.reshape(y_true, [-1, output_dim], name='reshape_ytrue')
         # Split the inputs into paramaters
