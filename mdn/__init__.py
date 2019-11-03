@@ -244,7 +244,8 @@ def sample_from_output(params, output_dim, num_mixes, temp=1.0, sigma_temp=1.0):
     # Alternative way to sample from categorical:
     # m = np.random.choice(range(len(pis)), p=pis)
     mus_vector = mus[m * output_dim:(m + 1) * output_dim]
-    sig_vector = sigs[m * output_dim:(m + 1) * output_dim] * sigma_temp  # adjust for temperature
-    cov_matrix = np.identity(output_dim) * sig_vector
+    sig_vector = sigs[m * output_dim:(m + 1) * output_dim] * sigma_temp  # adjust for temperature 
+    scale_matrix = np.identity(output_dim) * sig_vector # scale matrix from diag
+    cov_matrix = np.matmul(scale_matrix, scale_matrix.T) # cov is scale squared.
     sample = np.random.multivariate_normal(mus_vector, cov_matrix, 1)
     return sample
