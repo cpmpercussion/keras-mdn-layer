@@ -43,9 +43,12 @@ class MDN(layers.Layer):
         super(MDN, self).__init__(**kwargs)
 
     def build(self, input_shape):
-        self.mdn_mus.build(input_shape)
-        self.mdn_sigmas.build(input_shape)
-        self.mdn_pi.build(input_shape)
+        with tf.name_scope('mus'):
+            self.mdn_mus.build(input_shape)
+        with tf.name_scope('sigmas'):
+            self.mdn_sigmas.build(input_shape)
+        with tf.name_scope('pis'):
+            self.mdn_pi.build(input_shape)
         super(MDN, self).build(input_shape)
 
     @property
