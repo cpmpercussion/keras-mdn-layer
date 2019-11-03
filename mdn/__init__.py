@@ -9,11 +9,11 @@ for a starting point for this code.
 Provided under MIT License
 """
 from .version import __version__
-from tensorflow import keras
-from tensorflow.keras import backend as K
-from tensorflow.keras import layers
+from tensorflow.compat.v1 import keras
+from tensorflow.compat.v1.keras import backend as K
+from tensorflow.compat.v1.keras import layers
 import numpy as np
-import tensorflow as tf
+import tensorflow.compat.v1 as tf
 from tensorflow_probability import distributions as tfd
 
 
