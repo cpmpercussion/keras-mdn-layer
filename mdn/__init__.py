@@ -9,9 +9,11 @@ for a starting point for this code.
 Provided under MIT License
 """
 from .version import __version__
-import keras
+from tensorflow.compat.v1 import keras
+from tensorflow.compat.v1.keras import backend as K
+from tensorflow.compat.v1.keras import layers
 import numpy as np
-import tensorflow as tf
+import tensorflow.compat.v1 as tf
 from tensorflow_probability import distributions as tfd
 
 
@@ -21,7 +23,7 @@ def elu_plus_one_plus_epsilon(x):
     return keras.backend.elu(x) + 1 + keras.backend.epsilon()
 
 
-class MDN(keras.layers.Layer):
+class MDN(layers.Layer):
     """A Mixture Density Network Layer for Keras.
     This layer has a few tricks to avoid NaNs in the loss function when training:
         - Activation for variances is ELU + 1 + 1e-8 (to avoid very small values)
@@ -35,15 +37,18 @@ class MDN(keras.layers.Layer):
         self.output_dim = output_dimension
         self.num_mix = num_mixtures
         with tf.name_scope('MDN'):
-            self.mdn_mus = keras.layers.Dense(self.num_mix * self.output_dim, name='mdn_mus')  # mix*output vals, no activation
-            self.mdn_sigmas = keras.layers.Dense(self.num_mix * self.output_dim, activation=elu_plus_one_plus_epsilon, name='mdn_sigmas')  # mix*output vals exp activation
-            self.mdn_pi = keras.layers.Dense(self.num_mix, name='mdn_pi')  # mix vals, logits
+            self.mdn_mus = layers.Dense(self.num_mix * self.output_dim, name='mdn_mus')  # mix*output vals, no activation
+            self.mdn_sigmas = layers.Dense(self.num_mix * self.output_dim, activation=elu_plus_one_plus_epsilon, name='mdn_sigmas')  # mix*output vals exp activation
+            self.mdn_pi = layers.Dense(self.num_mix, name='mdn_pi')  # mix vals, logits
         super(MDN, self).__init__(**kwargs)
 
     def build(self, input_shape):
-        self.mdn_mus.build(input_shape)
-        self.mdn_sigmas.build(input_shape)
-        self.mdn_pi.build(input_shape)
+        with tf.name_scope('mus'):
+            self.mdn_mus.build(input_shape)
+        with tf.name_scope('sigmas'):
+            self.mdn_sigmas.build(input_shape)
+        with tf.name_scope('pis'):
+            self.mdn_pi.build(input_shape)
         super(MDN, self).build(input_shape)
 
     @property
@@ -56,10 +61,10 @@ class MDN(keras.layers.Layer):
 
     def call(self, x, mask=None):
         with tf.name_scope('MDN'):
-            mdn_out = keras.layers.concatenate([self.mdn_mus(x),
-                                                self.mdn_sigmas(x),
-                                                self.mdn_pi(x)],
-                                               name='mdn_outputs')
+            mdn_out = layers.concatenate([self.mdn_mus(x),
+                                          self.mdn_sigmas(x),
+                                          self.mdn_pi(x)],
+                                         name='mdn_outputs')
         return mdn_out
 
     def compute_output_shape(self, input_shape):
@@ -239,7 +244,9 @@ def sample_from_output(params, output_dim, num_mixes, temp=1.0, sigma_temp=1.0):
     # Alternative way to sample from categorical:
     # m = np.random.choice(range(len(pis)), p=pis)
     mus_vector = mus[m * output_dim:(m + 1) * output_dim]
-    sig_vector = sigs[m * output_dim:(m + 1) * output_dim] * sigma_temp  # adjust for temperature
-    cov_matrix = np.identity(output_dim) * sig_vector
+    sig_vector = sigs[m * output_dim:(m + 1) * output_dim]
+    scale_matrix = np.identity(output_dim) * sig_vector  # scale matrix from diag
+    cov_matrix = np.matmul(scale_matrix, scale_matrix.T)  # cov is scale squared.
+    cov_matrix = cov_matrix * sigma_temp  # adjust for sigma temperature
     sample = np.random.multivariate_normal(mus_vector, cov_matrix, 1)
     return sample
