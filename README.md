@@ -18,7 +18,7 @@ Two important functions are provided for training and prediction:
 
 ## Installation 
 
-This project requires Python 3.6+. You can easily install this package from [PyPI](https://pypi.org/project/keras-mdn-layer/) via `pip` like so:
+This project requires Python 3.6+, TensorFlow and TensorFlow Probability. You can easily install this package from [PyPI](https://pypi.org/project/keras-mdn-layer/) via `pip` like so:
 
     python3 -m pip install keras-mdn-layer
 
@@ -46,7 +46,7 @@ And finally, for learning how to generate musical touch-screen performances with
 
 The MDN layer should be the last in your network and you should use `get_mixture_loss_func` to generate a loss function. Here's an example of a simple network with one Dense layer followed by the MDN.
 
-    import keras
+    from tensorflow import keras
     import mdn
 
     N_HIDDEN = 15  # number of hidden units in the Dense layer
