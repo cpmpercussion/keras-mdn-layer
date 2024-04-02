@@ -1,6 +1,6 @@
 # Keras Mixture Density Network Layer
 
-[![Build Status](https://travis-ci.com/cpmpercussion/keras-mdn-layer.svg?branch=master)](https://travis-ci.com/cpmpercussion/keras-mdn-layer)
+[![Build and test keras-mdn-layer](https://github.com/cpmpercussion/keras-mdn-layer/actions/workflows/python-app.yml/badge.svg)](https://github.com/cpmpercussion/keras-mdn-layer/actions/workflows/python-app.yml)
 ![MIT License](https://img.shields.io/github/license/cpmpercussion/keras-mdn-layer.svg?style=flat)
 [![DOI](https://zenodo.org/badge/137585470.svg)](https://zenodo.org/badge/latestdoi/137585470)
 [![PyPI version](https://badge.fury.io/py/keras-mdn-layer.svg)](https://badge.fury.io/py/keras-mdn-layer)
