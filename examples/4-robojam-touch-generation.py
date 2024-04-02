@@ -9,7 +9,7 @@ import random
 import time
 import pandas as pd
 import mdn
-#import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt
 
 
 #input_colour = 'darkblue'
