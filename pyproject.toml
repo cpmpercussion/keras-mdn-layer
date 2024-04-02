@@ -1,0 +1,22 @@
+[tool.poetry]
+name = "keras-mdn-layer"
+version = "0.3.0"
+description = "An MDN Layer for Keras using TensorFlow's distributions module"
+authors = ["Charles Martin <cpm@charlesmartin.com.au>"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = ">=3.11,<3.12"
+numpy = "^1.26.4"
+tensorflow-probability = "0.23.0"
+tensorflow-macos = {version = "2.15.0", platform = "darwin"}
+tensorflow = {version = "2.15.0", platform = "linux"}
+
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.1.1"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
