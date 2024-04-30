@@ -1050,6 +1050,29 @@ pyside6 = ["pyside6"]
 test = ["flaky", "ipyparallel", "pre-commit", "pytest (>=7.0)", "pytest-asyncio (>=0.23.5)", "pytest-cov", "pytest-timeout"]
 
 [[package]]
+name = "ipympl"
+version = "0.9.4"
+description = "Matplotlib Jupyter Extension"
+optional = false
+python-versions = ">=3.9"
+files = [
+    {file = "ipympl-0.9.4-py3-none-any.whl", hash = "sha256:5b0c08c6f4f6ea655ba58239363457c10fb921557f5038c1a46db4457d6d6b0e"},
+    {file = "ipympl-0.9.4.tar.gz", hash = "sha256:cfb53c5b4fcbcee6d18f095eecfc6c6c474303d5b744e72cc66e7a2804708907"},
+]
+
+[package.dependencies]
+ipython = "<9"
+ipython-genutils = "*"
+ipywidgets = ">=7.6.0,<9"
+matplotlib = ">=3.4.0,<4"
+numpy = "*"
+pillow = "*"
+traitlets = "<6"
+
+[package.extras]
+docs = ["myst-nb", "sphinx (>=1.5)", "sphinx-book-theme", "sphinx-copybutton", "sphinx-thebe", "sphinx-togglebutton"]
+
+[[package]]
 name = "ipython"
 version = "8.24.0"
 description = "IPython: Productive Interactive Computing"
@@ -1085,6 +1108,17 @@ parallel = ["ipyparallel"]
 qtconsole = ["qtconsole"]
 test = ["pickleshare", "pytest", "pytest-asyncio (<0.22)", "testpath"]
 test-extra = ["curio", "ipython[test]", "matplotlib (!=3.2.0)", "nbformat", "numpy (>=1.23)", "pandas", "trio"]
+
+[[package]]
+name = "ipython-genutils"
+version = "0.2.0"
+description = "Vestigial utilities from IPython"
+optional = false
+python-versions = "*"
+files = [
+    {file = "ipython_genutils-0.2.0-py2.py3-none-any.whl", hash = "sha256:72dd37233799e619666c9f639a9da83c34013a73e8bbc79a7a6348d93c61fab8"},
+    {file = "ipython_genutils-0.2.0.tar.gz", hash = "sha256:eb2e116e75ecef9d4d228fdc66af54269afa26ab4463042e33785b887c628ba8"},
+]
 
 [[package]]
 name = "ipywidgets"
@@ -3480,4 +3514,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.11,<3.12"
-content-hash = "990fdeb26589102cb49711711c19818b779bffe0cb6228e6ec15f6a22c6a1ace"
+content-hash = "f780215a364e1a6c361770d61c9515a6acc11b8e4f7cf05aeaca426ee76a1092"
