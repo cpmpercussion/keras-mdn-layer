@@ -2,6 +2,7 @@
 *.svg
 *.npz
 *.h5
+*.keras
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
