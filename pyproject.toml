@@ -7,6 +7,8 @@ license = "MIT"
 readme = "README.md"
 homepage = "https://github.com/cpmpercussion/keras-mdn-layer"
 repository = "https://github.com/cpmpercussion/keras-mdn-layer"
+keywords = ["mixture density layer", "neural network", "machine learning"]
+classifiers = ['Topic :: Scientific/Engineering :: Artificial Intelligence']
 
 [tool.poetry.dependencies]
 python = ">=3.11,<3.12"
