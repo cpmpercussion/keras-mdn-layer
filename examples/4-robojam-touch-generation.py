@@ -8,7 +8,7 @@ import h5py
 import random
 import time
 import pandas as pd
-import mdn
+import keras_mdn_layer as mdn
 import matplotlib.pyplot as plt
 
 

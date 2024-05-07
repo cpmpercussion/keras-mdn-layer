@@ -1,5 +1,5 @@
 from tensorflow.compat.v1 import keras
-import mdn
+import keras_mdn_layer as mdn
 import numpy as np
 
 

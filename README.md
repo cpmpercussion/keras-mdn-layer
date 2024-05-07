@@ -22,7 +22,7 @@ This project requires Python 3.6+, TensorFlow and TensorFlow Probability. You ca
 
     python3 -m pip install keras-mdn-layer
 
-And finally, import the `mdn` module in Python: `import mdn`
+And finally, import the module in Python: `import keras_mdn_layer as mdn`
 
 Alternatively, you can clone or download this repository and then install via `python setup.py install`, or copy the `mdn` folder into your own project.
 
@@ -47,7 +47,7 @@ And finally, for learning how to generate musical touch-screen performances with
 The MDN layer should be the last in your network and you should use `get_mixture_loss_func` to generate a loss function. Here's an example of a simple network with one Dense layer followed by the MDN.
 
     from tensorflow import keras
-    import mdn
+    import keras_mdn_layer as mdn
 
     N_HIDDEN = 15  # number of hidden units in the Dense layer
     N_MIXES = 10  # number of mixture components
