@@ -26,6 +26,10 @@ And finally, import the module in Python: `import keras_mdn_layer as mdn`
 
 Alternatively, you can clone or download this repository and then install via `python setup.py install`, or copy the `mdn` folder into your own project.
 
+## Build
+
+This project builds using `poetry`. To build a wheel use `poetry build`.
+
 ## Examples
 
 Some examples are provided in the notebooks directory.
