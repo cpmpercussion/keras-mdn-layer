@@ -5,6 +5,8 @@ description = "An MDN Layer for Keras using TensorFlow's distributions module"
 authors = ["Charles Martin <cpm@charlesmartin.au>"]
 license = "MIT"
 readme = "README.md"
+homepage = "https://github.com/cpmpercussion/keras-mdn-layer"
+repository = "https://github.com/cpmpercussion/keras-mdn-layer"
 
 [tool.poetry.dependencies]
 python = ">=3.11,<3.12"
