@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "keras-mdn-layer"
-version = "0.4.0"
+version = "0.4.1"
 description = "An MDN Layer for Keras using TensorFlow's distributions module"
 authors = ["Charles Martin <cpm@charlesmartin.au>"]
 license = "MIT"
@@ -15,7 +15,7 @@ python = ">=3.11,<3.12"
 numpy = "^1.26.4"
 tensorflow-probability = "0.23.0"
 tensorflow-macos = {version = "2.15.0", platform = "darwin"}
-tensorflow = {version = "2.15.0", platform = "linux"}
+tensorflow = {version = "~2.15.0", platform = "linux"}
 
 
 [tool.poetry.group.dev.dependencies]
