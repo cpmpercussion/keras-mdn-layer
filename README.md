@@ -34,6 +34,8 @@ This project builds using `poetry`. To build a wheel use `poetry build`.
 
 Some examples are provided in the notebooks directory.
 
+To run these using `poetry`, run `poetry install` and then open jupyter `poetry run jupyter lab`.
+
 There's scripts for fitting multivalued functions, a standard MDN toy problem:
 
 <img src="https://preview.ibb.co/mZzkpd/Keras_MDN_Demo.jpg" alt="Keras MDN Demo" border="0">

@@ -14,9 +14,13 @@ classifiers = ['Topic :: Scientific/Engineering :: Artificial Intelligence']
 python = ">=3.11,<3.12"
 numpy = "^1.26.4"
 tensorflow-probability = "0.23.0"
-tensorflow-macos = {version = "2.15.0", platform = "darwin"}
-tensorflow = {version = "~2.15.0", platform = "linux"}
-
+tensorflow-macos = {markers="sys_platform == 'darwin' and platform_machine == 'aarch64'", version = "~2.15.0"}
+tensorflow = [
+  {markers="sys_platform == 'darwin' and platform_machine == 'x86_64'", version = "~2.15.0"},
+  {markers="sys_platform == 'linux' and platform_machine == 'x86_64'", version = "~2.15.0"},
+  {platform = "win32", version = "~2.15.0"},
+  {markers="sys_platform == 'linux' and platform_machine == 'aarch64'", url="https://github.com/PINTO0309/Tensorflow-bin/releases/download/v2.15.0.post1/tensorflow-2.15.0.post1-cp311-none-linux_aarch64.whl"}, # this is specifically for Raspberry Pis.
+  ]
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.1.1"
@@ -24,6 +28,7 @@ flake8 = "^7.0.0"
 jupyter = "^1.0.0"
 matplotlib = "^3.8.4"
 ipympl = "^0.9.4"
+pandas = "^2.2.2"
 
 [build-system]
 requires = ["poetry-core"]
