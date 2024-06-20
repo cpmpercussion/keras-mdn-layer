@@ -3107,6 +3107,17 @@ pure-eval = "*"
 tests = ["cython", "littleutils", "pygments", "pytest", "typeguard"]
 
 [[package]]
+name = "svgwrite"
+version = "1.4.3"
+description = "A Python library to create SVG drawings."
+optional = false
+python-versions = ">=3.6"
+files = [
+    {file = "svgwrite-1.4.3-py3-none-any.whl", hash = "sha256:bb6b2b5450f1edbfa597d924f9ac2dd099e625562e492021d7dd614f65f8a22d"},
+    {file = "svgwrite-1.4.3.zip", hash = "sha256:a8fbdfd4443302a6619a7f76bc937fc683daf2628d9b737c891ec08b8ce524c3"},
+]
+
+[[package]]
 name = "tensorboard"
 version = "2.15.2"
 description = "TensorBoard lets you watch Tensors Flow"
@@ -3770,4 +3781,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.11,<3.12"
-content-hash = "749c52a05196b11e90b184532f5f7b4d293ebddec040a978ea127e859d7e9934"
+content-hash = "183b806dec81fbf0c898dde5a59b8b11950dd01d106a046f5092375e46b04e9f"
