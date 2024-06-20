@@ -1,4 +1,4 @@
-from tensorflow.compat.v1 import keras
+from tensorflow import keras
 import keras_mdn_layer as mdn
 import numpy as np
 
