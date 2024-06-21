@@ -25,7 +25,7 @@ K.set_session(sess)
 
 # Download microjam performance data if needed.
 import urllib.request
-url = 'http://folk.uio.no/charlepm/datasets/TinyPerformanceCorpus.h5'
+url = 'https://github.com/cpmpercussion/creative-prediction-datasets/raw/main/datasets/TinyPerformanceCorpus.h5'
 urllib.request.urlretrieve(url, './TinyPerformanceCorpus.h5')  
 
 
