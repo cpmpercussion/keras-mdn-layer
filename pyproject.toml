@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "keras-mdn-layer"
-version = "0.4.1"
+version = "0.4.2"
 description = "An MDN Layer for Keras using TensorFlow's distributions module"
 authors = ["Charles Martin <cpm@charlesmartin.au>"]
 license = "MIT"
