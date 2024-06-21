@@ -1,8 +1,8 @@
-from tensorflow.compat.v1 import keras
-from tensorflow.compat.v1.keras import backend as K
-from tensorflow.compat.v1.keras.layers import Dense, Input
+from tensorflow import keras
+from tensorflow.keras import backend as K
+from tensorflow.keras.layers import Dense, Input
 import numpy as np
-import tensorflow.compat.v1 as tf
+import tensorflow as tf
 import math
 import h5py
 import random
@@ -25,7 +25,7 @@ K.set_session(sess)
 
 # Download microjam performance data if needed.
 import urllib.request
-url = 'http://folk.uio.no/charlepm/datasets/TinyPerformanceCorpus.h5'
+url = 'https://github.com/cpmpercussion/creative-prediction-datasets/raw/main/datasets/TinyPerformanceCorpus.h5'
 urllib.request.urlretrieve(url, './TinyPerformanceCorpus.h5')  
 
 

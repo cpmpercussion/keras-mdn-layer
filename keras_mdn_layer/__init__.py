@@ -9,11 +9,11 @@ for a starting point for this code.
 Provided under MIT License
 """
 from .version import __version__
-from tensorflow.compat.v1 import keras
-from tensorflow.compat.v1.keras import backend as K
-from tensorflow.compat.v1.keras import layers
+from tensorflow import keras
+from tensorflow.keras import backend as K
+from tensorflow.keras import layers
 import numpy as np
-import tensorflow.compat.v1 as tf
+import tensorflow as tf
 from tensorflow_probability import distributions as tfd
 
 
@@ -180,6 +180,7 @@ def split_mixture_params(params, output_dim, num_mixes):
     output_dim -- the dimension of the normal models in the mixture model
     num_mixes -- the number of mixtures represented
     """
+    assert len(params) == num_mixes + (output_dim * 2 * num_mixes), "The size of params needs to match the mixture configuration"
     mus = params[:num_mixes * output_dim]
     sigs = params[num_mixes * output_dim:2 * num_mixes * output_dim]
     pi_logits = params[-num_mixes:]
@@ -236,8 +237,9 @@ def sample_from_output(params, output_dim, num_mixes, temp=1.0, sigma_temp=1.0):
     sigma_temp -- the temperature for sampling from the normal distribution (default 1.0)
 
     Returns:
-    One sample from the the mixture model.
+    One sample from the the mixture model, that is a numpy array of length output_dim
     """
+    assert len(params) == num_mixes + (output_dim * 2 * num_mixes), "The size of params needs to match the mixture configuration"
     mus, sigs, pi_logits = split_mixture_params(params, output_dim, num_mixes)
     pis = softmax(pi_logits, t=temp)
     m = sample_from_categorical(pis)
@@ -249,4 +251,4 @@ def sample_from_output(params, output_dim, num_mixes, temp=1.0, sigma_temp=1.0):
     cov_matrix = np.matmul(scale_matrix, scale_matrix.T)  # cov is scale squared.
     cov_matrix = cov_matrix * sigma_temp  # adjust for sigma temperature
     sample = np.random.multivariate_normal(mus_vector, cov_matrix, 1)
-    return sample
+    return sample[0]

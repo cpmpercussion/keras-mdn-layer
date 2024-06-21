@@ -29,6 +29,7 @@ jupyter = "^1.0.0"
 matplotlib = "^3.8.4"
 ipympl = "^0.9.4"
 pandas = "^2.2.2"
+svgwrite = "^1.4.3"
 
 [build-system]
 requires = ["poetry-core"]
