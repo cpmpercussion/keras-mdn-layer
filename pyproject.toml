@@ -13,14 +13,16 @@ classifiers = ['Topic :: Scientific/Engineering :: Artificial Intelligence']
 [tool.poetry.dependencies]
 python = ">=3.11,<3.12"
 numpy = "^1.26.4"
-tensorflow-probability = "0.23.0"
-tensorflow-macos = {markers="sys_platform == 'darwin' and platform_machine == 'aarch64'", version = "~2.15.0"}
+tensorflow-probability = "0.24.0"
+# tensorflow-macos = 
 tensorflow = [
-  {markers="sys_platform == 'darwin' and platform_machine == 'x86_64'", version = "~2.15.0"},
-  {markers="sys_platform == 'linux' and platform_machine == 'x86_64'", version = "~2.15.0"},
-  {platform = "win32", version = "~2.15.0"},
-  {markers="sys_platform == 'linux' and platform_machine == 'aarch64'", url="https://github.com/PINTO0309/Tensorflow-bin/releases/download/v2.15.0.post1/tensorflow-2.15.0.post1-cp311-none-linux_aarch64.whl"}, # this is specifically for Raspberry Pis.
+  {markers="sys_platform == 'darwin' and platform_machine == 'aarch64'", version = "~2.16.1"},
+  {markers="sys_platform == 'darwin' and platform_machine == 'x86_64'", version = "~2.16.1"},
+  {markers="sys_platform == 'linux' and platform_machine == 'x86_64'", version = "~2.16.1"},
+  {platform = "win32", version = "~2.16.1"},
+  {markers="sys_platform == 'linux' and platform_machine == 'aarch64'", version="~2.16.1"}, # this is specifically for Raspberry Pis.
   ]
+tf-keras = "^2.16.0"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.1.1"
