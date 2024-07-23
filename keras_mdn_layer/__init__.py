@@ -8,7 +8,6 @@ for a starting point for this code.
 
 Provided under MIT License
 """
-from .version import __version__
 from tensorflow import keras
 from tensorflow.keras import backend as K
 from tensorflow.keras import layers
