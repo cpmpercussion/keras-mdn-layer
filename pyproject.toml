@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "keras-mdn-layer"
-version = "0.4.2"
+version = "0.4.3"
 description = "An MDN Layer for Keras using TensorFlow's distributions module"
 authors = ["Charles Martin <cpm@charlesmartin.au>"]
 license = "MIT"
@@ -11,13 +11,13 @@ keywords = ["mixture density layer", "neural network", "machine learning"]
 classifiers = ['Topic :: Scientific/Engineering :: Artificial Intelligence']
 
 [tool.poetry.dependencies]
-python = ">=3.11,<3.12"
+python = "~3.11"
 numpy = "^1.26.4"
 tensorflow-probability = "0.23.0"
 tensorflow-macos = {markers="sys_platform == 'darwin' and platform_machine == 'arm64'", version = "2.15.0"}
 tensorflow = [
-  {markers="sys_platform == 'darwin' and platform_machine == 'x86_64'", version = "~2.15.0"},
-  {platform = "linux", version = "~2.15.0"},
+  {markers="sys_platform == 'darwin' and platform_machine == 'x86_64'", version = "2.15.0"},
+  {markers="sys_platform == 'linux' and platform_machine == 'x86_64'", version = "2.15.0"},
   {platform = "win32", version = "~2.15.0"},
   ]
 
