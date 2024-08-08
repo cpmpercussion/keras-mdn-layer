@@ -14,13 +14,7 @@ classifiers = ['Topic :: Scientific/Engineering :: Artificial Intelligence']
 python = "3.11.*"
 numpy = "^1.26.4"
 tensorflow-probability = "0.24.0"
-tensorflow = [
-  {markers="sys_platform == 'darwin' and platform_machine == 'aarch64'", version = "~2.16.1"},
-  {markers="sys_platform == 'darwin' and platform_machine == 'x86_64'", version = "~2.16.1"},
-  {markers="sys_platform == 'linux' and platform_machine == 'x86_64'", version = "~2.16.1"},
-  {platform = "win32", version = "~2.16.1"},
-  {markers="sys_platform == 'linux' and platform_machine == 'aarch64'", version="~2.16.1"}, # this is specifically for Raspberry Pis.
-  ]
+tensorflow = "~2.16.1"
 tf-keras = "^2.16.0"
 
 [tool.poetry.group.dev.dependencies]
