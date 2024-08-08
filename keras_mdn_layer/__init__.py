@@ -8,6 +8,8 @@ for a starting point for this code.
 
 Provided under MIT License
 """
+
+import os;os.environ["TF_USE_LEGACY_KERAS"]="1"
 from tensorflow import keras
 from tensorflow.keras import backend as K
 from tensorflow.keras import layers
