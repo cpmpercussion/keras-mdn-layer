@@ -1,5 +1,6 @@
 # Keras Mixture Density Network Layer
 
+[![Coverage Status](https://coveralls.io/repos/github/cpmpercussion/keras-mdn-layer/badge.svg?branch=master)](https://coveralls.io/github/cpmpercussion/keras-mdn-layer?branch=master)
 [![Build and test keras-mdn-layer](https://github.com/cpmpercussion/keras-mdn-layer/actions/workflows/python-app.yml/badge.svg)](https://github.com/cpmpercussion/keras-mdn-layer/actions/workflows/python-app.yml)
 ![MIT License](https://img.shields.io/github/license/cpmpercussion/keras-mdn-layer.svg?style=flat)
 [![DOI](https://zenodo.org/badge/137585470.svg)](https://zenodo.org/badge/latestdoi/137585470)
