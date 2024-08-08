@@ -30,6 +30,8 @@ matplotlib = "^3.8.4"
 ipympl = "^0.9.4"
 pandas = "^2.2.2"
 svgwrite = "^1.4.3"
+black = "^24.8.0"
+coveralls = "^4.0.1"
 
 [build-system]
 requires = ["poetry-core"]
