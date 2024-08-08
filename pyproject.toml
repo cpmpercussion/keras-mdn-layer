@@ -16,6 +16,11 @@ numpy = "^1.26.4"
 tensorflow-probability = "0.24.0"
 tensorflow = "~2.16.1"
 tf-keras = "^2.16.0"
+tensorflow-io-gcs-filesystem = [
+  {platform="darwin", version = "^0.37.1"},
+  {platform="linux", version = "^0.37.1"},
+  {platform = "win32", version = "0.31.0"},
+  ]
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.1.1"
