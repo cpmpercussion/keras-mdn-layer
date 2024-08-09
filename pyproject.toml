@@ -21,6 +21,7 @@ tensorflow-io-gcs-filesystem = [
   {platform="linux", version = "^0.37.1"},
   {platform = "win32", version = "0.31.0"},
   ]
+tensorflow-intel = {version="^2.16.2", platform = "win32"}
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.1.1"
