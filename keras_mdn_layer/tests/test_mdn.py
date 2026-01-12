@@ -70,3 +70,36 @@ def test_output_shapes():
     print("Sample:", generated_sample)
     # test that the length of the generated sample is the same as N_DIMENSION
     assert len(generated_sample) == N_DIMENSION
+
+
+
+def test_build_time_distributed_MDN():
+    """Builds a time-distributed MDN model for sequence-to-sequence prediction."""
+    SEQ_LEN = 50
+    HIDDEN_UNITS = 256
+    OUTPUT_DIMENSION = 3
+    NUMBER_MIXTURES = 10
+
+    inputs = keras.layers.Input(shape=(SEQ_LEN,OUTPUT_DIMENSION), name='inputs')
+    lstm1_out = keras.layers.LSTM(HIDDEN_UNITS, name='lstm1', return_sequences=True)(inputs)
+    lstm2_out = keras.layers.LSTM(HIDDEN_UNITS, name='lstm2', return_sequences=True)(lstm1_out)
+    mdn_layer = mdn.MDN(OUTPUT_DIMENSION, NUMBER_MIXTURES, name='mdn_outputs')
+    mdn_out = keras.layers.TimeDistributed(mdn_layer, name='td_mdn')(lstm2_out)
+
+    model = keras.models.Model(inputs=inputs, outputs=mdn_out, name="kanji-training-td")
+    model.compile(loss=mdn.get_mixture_loss_func(OUTPUT_DIMENSION,NUMBER_MIXTURES), optimizer='adam')
+    model.summary()
+    assert isinstance(model, keras.models.Model)
+
+def test_rnn_inference_model():
+    HIDDEN_UNITS = 256
+    OUTPUT_DIMENSION = 3
+    NUMBER_MIXTURES = 10
+
+    decoder = keras.Sequential()
+    decoder.add(keras.layers.LSTM(HIDDEN_UNITS, batch_input_shape=(1,1,OUTPUT_DIMENSION), return_sequences=True, stateful=True))
+    decoder.add(keras.layers.LSTM(HIDDEN_UNITS, stateful=True))
+    decoder.add(mdn.MDN(OUTPUT_DIMENSION, NUMBER_MIXTURES))
+    decoder.compile(loss=mdn.get_mixture_loss_func(OUTPUT_DIMENSION,NUMBER_MIXTURES), optimizer=keras.optimizers.Adam())
+    decoder.summary()
+    assert isinstance(decoder, keras.Sequential)
