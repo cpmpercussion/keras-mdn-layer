@@ -8,24 +8,24 @@
 
 A mixture density network (MDN) Layer for Keras using TensorFlow's distributions module. This makes it a bit more simple to experiment with neural networks that predict multiple real-valued variables that can take on multiple equally likely values.
 
-This layer can help build MDN-RNNs similar to those used in [RoboJam](https://github.com/cpmpercussion/robojam), [Sketch-RNN](https://experiments.withgoogle.com/sketch-rnn-demo), [handwriting generation](https://distill.pub/2016/handwriting/), and maybe even [world models](https://worldmodels.github.io). You can do a lot of cool stuff with MDNs!
+This layer can help build MDN-RNNs similar to those used in [RoboJam](https://github.com/cpmpercussion/robojam), [Sketch-RNN](https://experiments.withgoogle.com/sketch-rnn-demo), [handwriting generation](https://distill.pub/2016/handwriting/), and maybe even [world models](https://worldmodels.github.io). You can do a lot of cool stuff with MDNs!
 
 One benefit of this implementation is that you can predict any number of real-values. TensorFlow's `Mixture`, `Categorical`, and `MultivariateNormalDiag` distribution functions are used to generate the loss function (the probability density function of a mixture of multivariate normal distributions with a diagonal covariance matrix). In previous work, the loss function has often been specified by hand which is fine for 1D or 2D prediction, but becomes a bit more annoying after that.
 
 Two important functions are provided for training and prediction:
 
-- `get_mixture_loss_func(output_dim, num_mixtures)`: This function generates a loss function with the correct output dimensiona and number of mixtures.
-- `sample_from_output(params, output_dim, num_mixtures, temp=1.0)`: This functions samples from the mixture distribution output by the model.
+- `get_mixture_loss_func(output_dim, num_mixtures)`: This function generates a loss function with the correct output dimensions and number of mixtures.
+- `sample_from_output(params, output_dim, num_mixtures, temp=1.0, sigma_temp=1.0)`: This function samples from the mixture distribution output by the model.
 
 ## Installation 
 
-This project requires Python 3.6+, TensorFlow and TensorFlow Probability. You can easily install this package from [PyPI](https://pypi.org/project/keras-mdn-layer/) via `pip` like so:
+This project requires Python 3.11+, TensorFlow 2.16, and TensorFlow Probability 0.24. You can install this package from [PyPI](https://pypi.org/project/keras-mdn-layer/) via `pip` like so:
 
     python3 -m pip install keras-mdn-layer
 
 And finally, import the module in Python: `import keras_mdn_layer as mdn`
 
-Alternatively, you can clone or download this repository and then install via `python setup.py install`, or copy the `mdn` folder into your own project.
+Alternatively, you can clone or download this repository and then install via `poetry install`.
 
 ## Build
 
@@ -73,7 +73,7 @@ Fit as normal:
 The predictions from the network are parameters of the mixture models, so you have to apply the `sample_from_output` function to generate samples.
 
     y_test = model.predict(x_test)
-    y_samples = np.apply_along_axis(sample_from_output, 1, y_test, OUTPUT_DIMS, N_MIXES, temp=1.0)
+    y_samples = np.apply_along_axis(mdn.sample_from_output, 1, y_test, OUTPUT_DIMS, N_MIXES, temp=1.0)
 
 See the notebooks directory for examples in jupyter notebooks!
 
@@ -81,12 +81,11 @@ See the notebooks directory for examples in jupyter notebooks!
 
 Saving models is straight forward:
 
-    model.save('test_save.h5')
+    model.save('test_save.keras')
 
-But loading requires `cutom_objects` to be filled with the MDN layer, and a loss function with the appropriate parameters:
+But loading requires `custom_objects` to be filled with the MDN layer, and a loss function with the appropriate parameters:
 
-    m_2 = keras.models.load_model('test_save.h5', custom_objects={'MDN': mdn.MDN, 'mdn_loss_func': mdn.get_mixture_loss_func(1, N_MIXES)})
-
+    m_2 = keras.models.load_model('test_save.keras', custom_objects={'MDN': mdn.MDN, 'mdn_loss_func': mdn.get_mixture_loss_func(1, N_MIXES)})
 
 ## Acknowledgements
 
