@@ -31,19 +31,27 @@ jobs:
             tfp-version: '0.25.0'
             tf-keras-version: ''
         exclude:
-          # TF 2.15 does not support Python 3.12+
+          # TF 2.15 only supports Python 3.11; no wheels for 3.12+
           - tf-version: '2.15.0'
             python-version: '3.12'
           - tf-version: '2.15.0'
             python-version: '3.13'
-          # TF 2.16 does not support Python 3.12+
-          - tf-version: '2.16.2'
-            python-version: '3.12'
+          # TF 2.15 on macOS: standalone keras package breaks `from tensorflow import keras`
+          - tf-version: '2.15.0'
+            platform: macos-latest
+          # TF 2.16 does not support Python 3.13
           - tf-version: '2.16.2'
             python-version: '3.13'
           # TF 2.18 does not support Python 3.13
           - tf-version: '2.18.0'
             python-version: '3.13'
+          # Windows: TF <2.20 installs via tensorflow-intel which breaks `from tensorflow import keras`
+          - tf-version: '2.15.0'
+            platform: windows-latest
+          - tf-version: '2.16.2'
+            platform: windows-latest
+          - tf-version: '2.18.0'
+            platform: windows-latest
 
     runs-on: ${{ matrix.platform }}
     name: "${{ matrix.platform }} / py${{ matrix.python-version }} / TF${{ matrix.tf-version }}"
