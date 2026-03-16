@@ -20,7 +20,7 @@ jobs:
         include:
           - tf-version: '2.15.1'
             tfp-version: '0.23.0'
-            tf-keras-version: '2.15.0'
+            tf-keras-version: '2.15.1'
           - tf-version: '2.16.2'
             tfp-version: '0.24.0'
             tf-keras-version: '2.16.0'
@@ -36,7 +36,7 @@ jobs:
             python-version: '3.12'
           - tf-version: '2.15.1'
             python-version: '3.13'
-          # TF 2.15 on macOS: standalone keras package breaks `from tensorflow import keras`
+          # TF 2.15 on macOS: supposed to use tensorflow-macos on aarch64 in this era, too hard to deal with.
           - tf-version: '2.15.1'
             platform: macos-latest
           # TF 2.16 does not support Python 3.13
@@ -54,7 +54,7 @@ jobs:
             platform: windows-latest
 
     runs-on: ${{ matrix.platform }}
-    name: "${{ matrix.platform }} / py${{ matrix.python-version }} / TF${{ matrix.tf-version }}"
+    name: "${{ matrix.platform }} / py${{ matrix.python-version }} / TF${{ matrix.tf-version }} / TFP${{ matrix.tfp-version }}"
 
     steps:
     - uses: actions/checkout@v4
