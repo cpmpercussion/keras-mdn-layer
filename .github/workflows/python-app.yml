@@ -10,12 +10,43 @@ permissions:
   contents: read
 
 jobs:
-  build:
+  test:
     strategy:
+      fail-fast: false
       matrix:
         platform: [ubuntu-latest, macos-latest, windows-latest]
+        python-version: ['3.11', '3.12', '3.13']
+        tf-version: ['2.15.0', '2.16.2', '2.18.0', '2.20.0']
+        include:
+          - tf-version: '2.15.0'
+            tfp-version: '0.23.0'
+            tf-keras-version: '2.15.0'
+          - tf-version: '2.16.2'
+            tfp-version: '0.24.0'
+            tf-keras-version: '2.16.0'
+          - tf-version: '2.18.0'
+            tfp-version: '0.25.0'
+            tf-keras-version: ''
+          - tf-version: '2.20.0'
+            tfp-version: '0.25.0'
+            tf-keras-version: ''
+        exclude:
+          # TF 2.15 does not support Python 3.12+
+          - tf-version: '2.15.0'
+            python-version: '3.12'
+          - tf-version: '2.15.0'
+            python-version: '3.13'
+          # TF 2.16 does not support Python 3.12+
+          - tf-version: '2.16.2'
+            python-version: '3.12'
+          - tf-version: '2.16.2'
+            python-version: '3.13'
+          # TF 2.18 does not support Python 3.13
+          - tf-version: '2.18.0'
+            python-version: '3.13'
 
     runs-on: ${{ matrix.platform }}
+    name: "${{ matrix.platform }} / py${{ matrix.python-version }} / TF${{ matrix.tf-version }}"
 
     steps:
     - uses: actions/checkout@v4
@@ -23,21 +54,50 @@ jobs:
       run: pipx install poetry
     - uses: actions/setup-python@v5
       with:
-        python-version: '3.11'
+        python-version: ${{ matrix.python-version }}
         cache: 'poetry'
     - name: Install dependencies
       run: |
-        poetry install
+        poetry install --no-root
+        poetry run pip install tensorflow==${{ matrix.tf-version }} tensorflow-probability==${{ matrix.tfp-version }}
+    - name: Install tf-keras (legacy TF only)
+      if: matrix.tf-keras-version != ''
+      run: |
+        poetry run pip install tf-keras==${{ matrix.tf-keras-version }}
+    - name: Install project
+      run: |
+        poetry install --only-root
     - name: Lint with flake8
       run: |
         # stop the build if there are Python syntax errors or undefined names
         poetry run flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
         # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
         poetry run flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
-    - name: Run tests.
+    - name: Run tests
       run: |
-        poetry run coverage run --source=keras_mdn_layer -m pytest 
-    - name: Upload coverage.
+        poetry run coverage run --source=keras_mdn_layer -m pytest
+
+  coverage:
+    needs: test
+    runs-on: ubuntu-latest
+    name: "Upload coverage"
+    steps:
+    - uses: actions/checkout@v4
+    - name: Install poetry
+      run: pipx install poetry
+    - uses: actions/setup-python@v5
+      with:
+        python-version: '3.12'
+        cache: 'poetry'
+    - name: Install dependencies
+      run: |
+        poetry install --no-root
+        poetry run pip install tensorflow==2.18.0 tensorflow-probability==0.25.0
+        poetry install --only-root
+    - name: Run tests with coverage
+      run: |
+        poetry run coverage run --source=keras_mdn_layer -m pytest
+    - name: Upload coverage
       run: poetry run coveralls
       env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
