@@ -16,15 +16,15 @@ jobs:
       matrix:
         platform: [ubuntu-latest, macos-latest, windows-latest]
         python-version: ['3.11', '3.12', '3.13']
-        tf-version: ['2.15.0', '2.16.2', '2.18.0', '2.20.0']
+        tf-version: ['2.15.1', '2.16.2', '2.18.1', '2.20.0']
         include:
-          - tf-version: '2.15.0'
+          - tf-version: '2.15.1'
             tfp-version: '0.23.0'
             tf-keras-version: '2.15.0'
           - tf-version: '2.16.2'
             tfp-version: '0.24.0'
             tf-keras-version: '2.16.0'
-          - tf-version: '2.18.0'
+          - tf-version: '2.18.1'
             tfp-version: '0.25.0'
             tf-keras-version: ''
           - tf-version: '2.20.0'
@@ -32,25 +32,25 @@ jobs:
             tf-keras-version: ''
         exclude:
           # TF 2.15 only supports Python 3.11; no wheels for 3.12+
-          - tf-version: '2.15.0'
+          - tf-version: '2.15.1'
             python-version: '3.12'
-          - tf-version: '2.15.0'
+          - tf-version: '2.15.1'
             python-version: '3.13'
           # TF 2.15 on macOS: standalone keras package breaks `from tensorflow import keras`
-          - tf-version: '2.15.0'
+          - tf-version: '2.15.1'
             platform: macos-latest
           # TF 2.16 does not support Python 3.13
           - tf-version: '2.16.2'
             python-version: '3.13'
           # TF 2.18 does not support Python 3.13
-          - tf-version: '2.18.0'
+          - tf-version: '2.18.1'
             python-version: '3.13'
           # Windows: TF <2.20 installs via tensorflow-intel which breaks `from tensorflow import keras`
-          - tf-version: '2.15.0'
+          - tf-version: '2.15.1'
             platform: windows-latest
           - tf-version: '2.16.2'
             platform: windows-latest
-          - tf-version: '2.18.0'
+          - tf-version: '2.18.1'
             platform: windows-latest
 
     runs-on: ${{ matrix.platform }}
