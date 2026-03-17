@@ -17,15 +17,28 @@ Two important functions are provided for training and prediction:
 - `get_mixture_loss_func(output_dim, num_mixtures)`: This function generates a loss function with the correct output dimensions and number of mixtures.
 - `sample_from_output(params, output_dim, num_mixtures, temp=1.0, sigma_temp=1.0)`: This function samples from the mixture distribution output by the model.
 
-## Installation 
+## Installation
 
-This project requires Python 3.11+, TensorFlow 2.16, and TensorFlow Probability 0.24. You can install this package from [PyPI](https://pypi.org/project/keras-mdn-layer/) via `pip` like so:
+This project requires Python 3.11+, TensorFlow 2.16+, and TensorFlow Probability 0.24+. You can install this package from [PyPI](https://pypi.org/project/keras-mdn-layer/) via `pip` like so:
 
     python3 -m pip install keras-mdn-layer
 
 And finally, import the module in Python: `import keras_mdn_layer as mdn`
 
 Alternatively, you can clone or download this repository and then install via `poetry install`.
+
+## Tested Configurations
+
+This library is tested against the following platform, Python, and TensorFlow combinations:
+
+| TensorFlow | TF Probability | tf-keras | Python       | Platforms            |
+|------------|----------------|----------|--------------|----------------------|
+| 2.15.1     | 0.23.0         | 2.15.1   | 3.11         | Ubuntu               |
+| 2.16.2     | 0.24.0         | 2.16.0   | 3.11, 3.12   | Ubuntu, macOS        |
+| 2.18.1     | 0.25.0         | —        | 3.11, 3.12   | Ubuntu, macOS        |
+| 2.20.0     | 0.25.0         | —        | 3.11–3.13    | Ubuntu, macOS, Windows |
+
+Other combinations may work but are not regularly tested in CI.
 
 ## Build
 
