@@ -1,6 +1,6 @@
 [project]
 name = "keras-mdn-layer"
-version = "0.6.0"
+version = "0.6.1"
 description = "An MDN Layer for Keras using TensorFlow's distributions module"
 authors = [
     { name = "Charles Martin", email = "cpm@charlesmartin.au" },
