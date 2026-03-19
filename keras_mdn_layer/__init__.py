@@ -78,8 +78,37 @@ def _split_mdn_params(y_pred, output_dim, num_mixes):
 def _mdn_log_prob(y_true, mu, sigma, pi_logits, output_dim, num_mixes):
     """Compute log probability of y_true under the mixture model.
 
-    Uses the log-sum-exp trick for numerical stability:
-        log p(y) = logsumexp_k( log_pi_k + sum_d(-0.5*log(2*pi) - log(sigma) - 0.5*((y-mu)/sigma)^2) )
+    Implements the negative log-likelihood for a Mixture Density Network as
+    described in Bishop (1994) "Mixture Density Networks", Aston University
+    Technical Report NCRG/94/004, Section 2.
+
+    The mixture model probability is (Bishop 1994, Eq. 22):
+        p(y|x) = sum_k  pi_k(x) * N(y | mu_k(x), sigma_k^2(x) * I)
+
+    where pi_k are mixing coefficients (sum to 1), mu_k are component means,
+    and sigma_k are component standard deviations (diagonal covariance).
+
+    The log-likelihood is computed in log-space using the log-sum-exp trick
+    for numerical stability (see e.g., Murphy, "Machine Learning: A Probabilistic
+    Perspective", 2012, Section 3.5.3):
+        log p(y|x) = logsumexp_k( log pi_k + log N(y | mu_k, sigma_k^2 I) )
+
+    Each component log-density is the standard multivariate normal with diagonal
+    covariance (see e.g., Wikipedia "Multivariate normal distribution"):
+        log N(y | mu, sigma^2 I) = -D/2 log(2 pi) - sum_d log(sigma_d)
+                                    - 0.5 sum_d ((y_d - mu_d) / sigma_d)^2
+
+    The mixing coefficients are parameterised as logits and converted to
+    probabilities via softmax (Bishop 1994, Eq. 23), computed here as
+    log_softmax for numerical stability.
+
+    References:
+        - Bishop, C. M. (1994). "Mixture Density Networks." NCRG/94/004.
+          https://publications.aston.ac.uk/id/eprint/373/1/NCRG_94_004.pdf
+        - Bishop, C. M. (2006). "Pattern Recognition and Machine Learning",
+          Section 5.6 "Mixture Density Networks".
+        - Murphy, K. P. (2012). "Machine Learning: A Probabilistic Perspective",
+          Section 3.5.3 (log-sum-exp trick).
     """
     # Reshape y_true: (batch, output_dim)
     y_true = ops.reshape(y_true, (-1, output_dim))
@@ -91,24 +120,32 @@ def _mdn_log_prob(y_true, mu, sigma, pi_logits, output_dim, num_mixes):
     # Expand y_true to (batch, 1, output_dim) for broadcasting
     y_true = ops.expand_dims(y_true, axis=1)
 
-    # Log probability of each component (diagonal covariance normal)
-    # log N(y | mu, sigma^2) = -0.5*D*log(2*pi) - sum(log(sigma)) - 0.5*sum(((y-mu)/sigma)^2)
+    # Log probability of each component: diagonal-covariance normal
+    # log N(y | mu, diag(sigma^2)) = -D/2 log(2pi) - sum_d log(sigma_d)
+    #                                 - 1/2 sum_d ((y_d - mu_d)/sigma_d)^2
+    # (Standard result; see Bishop PRML Eq. 2.43 with diagonal covariance)
     log_component = (
         -0.5 * output_dim * math.log(2.0 * math.pi)
         - ops.sum(ops.log(sigma), axis=-1)
         - 0.5 * ops.sum(ops.square((y_true - mu) / sigma), axis=-1)
     )  # shape: (batch, num_mixes)
 
-    # Log mixture weights via log_softmax (numerically stable)
+    # Log mixing coefficients via log_softmax (numerically stable)
+    # pi_k = exp(z_k) / sum_j exp(z_j)  (Bishop 1994, Eq. 23)
     log_pi = ops.log_softmax(pi_logits, axis=-1)  # shape: (batch, num_mixes)
 
-    # Log probability of mixture: logsumexp over components
+    # Log mixture probability: log sum_k pi_k * N_k = logsumexp_k(log pi_k + log N_k)
+    # (Murphy 2012, Section 3.5.3 for the log-sum-exp identity)
     log_prob = ops.logsumexp(log_pi + log_component, axis=-1)  # shape: (batch,)
     return log_prob
 
 
 def get_mixture_loss_func(output_dim, num_mixes):
-    """Construct a loss function for the MDN layer parametrised by number of mixtures."""
+    """Construct a loss function for the MDN layer parametrised by number of mixtures.
+
+    Returns the mean negative log-likelihood: L = -1/N sum_n log p(y_n | x_n)
+    This is the standard training objective for MDNs (Bishop 1994, Eq. 33).
+    """
     def mdn_loss_func(y_true, y_pred):
         mu, sigma, pi_logits = _split_mdn_params(y_pred, output_dim, num_mixes)
         log_prob = _mdn_log_prob(y_true, mu, sigma, pi_logits, output_dim, num_mixes)
@@ -215,8 +252,18 @@ def sample_from_categorical(dist):
 
 def sample_from_output(params, output_dim, num_mixes, temp=1.0, sigma_temp=1.0):
     """Sample from an MDN output with temperature adjustment.
-    This calculation is done outside of the Keras model using
-    Numpy.
+    This calculation is done outside of the Keras model using Numpy.
+
+    Sampling follows the standard ancestral sampling procedure for mixture models
+    (Bishop PRML Section 11.1.4):
+        1. Sample component index k ~ Categorical(softmax(pi_logits / temp))
+        2. Sample y ~ N(mu_k, sigma_k^2 * sigma_temp * I)
+
+    The temperature parameters control the entropy of sampling:
+        - temp: scales logits before softmax, controlling how uniformly
+          components are chosen (temp->0: argmax, temp->inf: uniform)
+        - sigma_temp: scales the covariance matrix, controlling the spread
+          of samples around the chosen component mean
 
     Arguments:
     params -- the parameters of the mixture model
