@@ -14,6 +14,45 @@ files = [
 ]
 
 [[package]]
+name = "ai-edge-litert"
+version = "2.1.3"
+description = "LiteRT is for mobile and embedded devices."
+optional = false
+python-versions = "*"
+groups = ["dev"]
+markers = "python_version == \"3.11\" or python_version >= \"3.12\""
+files = [
+    {file = "ai_edge_litert-2.1.3-cp310-cp310-macosx_12_0_arm64.whl", hash = "sha256:21b9ad6705d6ae282dba7d3bac7c5b116b87c82549ab3c808c38a573b980cf77"},
+    {file = "ai_edge_litert-2.1.3-cp310-cp310-manylinux_2_27_aarch64.whl", hash = "sha256:10dab7bc7f268626f9643843ccc2bbb925d480c4c9e9b620d7398c1dc3bb727d"},
+    {file = "ai_edge_litert-2.1.3-cp310-cp310-manylinux_2_27_x86_64.whl", hash = "sha256:9bd26575c3535531bba0d5712adc695f118ac9cd022af8a6b31cf1f4723b53c9"},
+    {file = "ai_edge_litert-2.1.3-cp310-cp310-win_amd64.whl", hash = "sha256:ae2352a7eadeb6349311db1937815c48bdb429d213ed75ac6a9ad7279ff3b902"},
+    {file = "ai_edge_litert-2.1.3-cp311-cp311-macosx_12_0_arm64.whl", hash = "sha256:d3f10006a9f2c175a7843f9d1a932990da273d6600dacd09850c9158c34b97c7"},
+    {file = "ai_edge_litert-2.1.3-cp311-cp311-manylinux_2_27_aarch64.whl", hash = "sha256:6f5496727a16850dabd21b3ed6860c3a6d0a1fac5403ff48d5ba1aadf3eced06"},
+    {file = "ai_edge_litert-2.1.3-cp311-cp311-manylinux_2_27_x86_64.whl", hash = "sha256:8f46ae8d4a1d95ee5b86d94e3b8fab623b8261fec2505e99e74b51d841c8436f"},
+    {file = "ai_edge_litert-2.1.3-cp311-cp311-win_amd64.whl", hash = "sha256:3de37c28309b163e6934e269fd1fda14755428e1348b3b6da0dedb4e4e9ce42c"},
+    {file = "ai_edge_litert-2.1.3-cp312-cp312-macosx_12_0_arm64.whl", hash = "sha256:950861b130003c7ef0fcc93248f985ee503ae2028e6bef529bd58e1f4f56dbea"},
+    {file = "ai_edge_litert-2.1.3-cp312-cp312-manylinux_2_27_aarch64.whl", hash = "sha256:b391b966a9140f1ac94cbe4a2a89da732a7af459eb9d80bb9388742fc24918b1"},
+    {file = "ai_edge_litert-2.1.3-cp312-cp312-manylinux_2_27_x86_64.whl", hash = "sha256:d4c234dfdfa1e99670507df85e97601bbe935bf58a0ad3bd1221077fa9dce751"},
+    {file = "ai_edge_litert-2.1.3-cp312-cp312-win_amd64.whl", hash = "sha256:748f714fab3ee32336cf52cd30588d49306b2e12b0afbb42adcc508706e56f87"},
+    {file = "ai_edge_litert-2.1.3-cp313-cp313-macosx_12_0_arm64.whl", hash = "sha256:bf23fbdd69194cbfc7f14abb7aee1c3933507dbf525a6bfd98599270267a116d"},
+    {file = "ai_edge_litert-2.1.3-cp313-cp313-manylinux_2_27_aarch64.whl", hash = "sha256:4ec96f9d9bc631bccd73f32b4b03cb99470cdad3a8a8ddc3968a7d084157668a"},
+    {file = "ai_edge_litert-2.1.3-cp313-cp313-manylinux_2_27_x86_64.whl", hash = "sha256:4c84e7f30da401274402b9d32ca2e8c6c052ed55792e43eee20d3e89cd649232"},
+    {file = "ai_edge_litert-2.1.3-cp313-cp313-win_amd64.whl", hash = "sha256:3507ea27ebe8354b1cbcb553ab8287aedda169b37365d3b3b016934a845c8ae4"},
+]
+
+[package.dependencies]
+"backports.strenum" = "*"
+flatbuffers = "*"
+numpy = ">=1.23.2"
+protobuf = "*"
+tqdm = "*"
+typing-extensions = "*"
+
+[package.extras]
+model-utils = ["lark", "ml_dtypes", "xdsl (==0.28.0)"]
+npu-sdk = ["ai-edge-litert-sdk-mediatek (>=0.1.0,<0.2.0)", "ai-edge-litert-sdk-qualcomm (>=0.1.0,<0.2.0)"]
+
+[[package]]
 name = "anyio"
 version = "4.12.1"
 description = "High-level concurrency and networking framework on top of asyncio or Trio"
@@ -201,6 +240,19 @@ files = [
 
 [package.extras]
 dev = ["backports.zoneinfo", "freezegun (>=1.0,<2.0)", "jinja2 (>=3.0)", "pytest (>=6.0)", "pytest-cov", "pytz", "setuptools", "tzdata"]
+
+[[package]]
+name = "backports-strenum"
+version = "1.2.8"
+description = "Base class for creating enumerated constants that are also subclasses of str"
+optional = false
+python-versions = ">=3.8.6,<4.0.0"
+groups = ["dev"]
+markers = "python_version == \"3.11\" or python_version >= \"3.12\""
+files = [
+    {file = "backports_strenum-1.2.8-py3-none-any.whl", hash = "sha256:fc297cb26971f7d5e15a478a06a78575197f81daea47975771b1aae996dcccf4"},
+    {file = "backports_strenum-1.2.8.tar.gz", hash = "sha256:4dd47365fd427ac8028aeb1ad3628ea38e67c4d0336ceebd5c0f113e0c487ce9"},
+]
 
 [[package]]
 name = "beautifulsoup4"
@@ -4034,6 +4086,29 @@ files = [
 ]
 
 [[package]]
+name = "tqdm"
+version = "4.67.3"
+description = "Fast, Extensible Progress Meter"
+optional = false
+python-versions = ">=3.7"
+groups = ["dev"]
+markers = "python_version == \"3.11\" or python_version >= \"3.12\""
+files = [
+    {file = "tqdm-4.67.3-py3-none-any.whl", hash = "sha256:ee1e4c0e59148062281c49d80b25b67771a127c85fc9676d3be5f243206826bf"},
+    {file = "tqdm-4.67.3.tar.gz", hash = "sha256:7d825f03f89244ef73f1d4ce193cb1774a8179fd96f31d7e1dcde62092b960bb"},
+]
+
+[package.dependencies]
+colorama = {version = "*", markers = "platform_system == \"Windows\""}
+
+[package.extras]
+dev = ["nbval", "pytest (>=6)", "pytest-asyncio (>=0.24)", "pytest-cov", "pytest-timeout"]
+discord = ["requests"]
+notebook = ["ipywidgets (>=6)"]
+slack = ["slack-sdk"]
+telegram = ["requests"]
+
+[[package]]
 name = "traitlets"
 version = "5.14.3"
 description = "Traitlets Python configuration system"
@@ -4307,4 +4382,4 @@ dev = ["pytest", "setuptools"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.11,<4.0"
-content-hash = "2e24c87213213ef6ef7306a1b7914691216cd30cc228494e13f91c789551a290"
+content-hash = "cb273b41aab5efe99fc94e9eda79844206f6c9c8ac36471f0b7e8ea18f5c1a04"

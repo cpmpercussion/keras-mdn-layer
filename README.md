@@ -114,6 +114,48 @@ But loading requires `custom_objects` to be filled with the MDN layer, and a los
 
     m_2 = keras.models.load_model('test_save.keras', custom_objects={'MDN': mdn.MDN, 'mdn_loss_func': mdn.get_mixture_loss_func(1, N_MIXES)})
 
+## TFLite / LiteRT Export
+
+MDRNN models built with this layer can be exported to TFLite format for fast on-device inference using [LiteRT](https://ai.google.dev/edge/litert) (formerly TensorFlow Lite). An example script is provided in `examples/tflite_mdrnn.py`.
+
+Because LSTMs require static shapes for TFLite conversion, wrap the model call in a `tf.function` with a fixed input signature before converting:
+
+    import tensorflow as tf
+
+    @tf.function(input_signature=[
+        tf.TensorSpec(shape=[1, seq_length, dimension], dtype=tf.float32)
+    ])
+    def serve(inputs):
+        return model(inputs)
+
+    converter = tf.lite.TFLiteConverter.from_concrete_functions(
+        [serve.get_concrete_function()]
+    )
+    tflite_model = converter.convert()
+
+Then load and run inference with LiteRT (`pip install ai-edge-litert`):
+
+    from ai_edge_litert.interpreter import Interpreter
+
+    interpreter = Interpreter(model_content=tflite_model)
+    interpreter.allocate_tensors()
+    input_details = interpreter.get_input_details()
+    output_details = interpreter.get_output_details()
+
+    interpreter.set_tensor(input_details[0]["index"], test_input)
+    interpreter.invoke()
+    output = interpreter.get_tensor(output_details[0]["index"])
+
+In a benchmark of a 2-layer LSTM MDRNN (dim=8, 64 hidden units, 5 mixtures, seq_length=30), LiteRT inference was **~46x faster** than `model.predict()` and **~180x faster** than `model()` direct call:
+
+| Method          | Mean latency |
+|-----------------|-------------|
+| LiteRT          | 0.4 ms      |
+| Keras `predict` | 19 ms       |
+| Keras `__call__` | 75 ms      |
+
+The TFLite output matches Keras output to within ~1e-6, so there is no accuracy loss. The full example with training, conversion, inference, and benchmarking is in [`examples/tflite_mdrnn.py`](examples/tflite_mdrnn.py).
+
 ## Acknowledgements
 
 - Hat tip to [Omimo's Keras MDN layer](https://github.com/omimo/Keras-MDN) for a starting point for this code.

@@ -30,6 +30,7 @@ svgwrite = "^1.4.3"
 black = "^26.3.1"
 coveralls = "^4.0.2"
 tensorflow = "^2.21.0"
+ai-edge-litert = "^2.1.2"
 
 [build-system]
 requires = ["poetry-core"]
