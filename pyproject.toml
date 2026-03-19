@@ -1,6 +1,6 @@
 [project]
 name = "keras-mdn-layer"
-version = "0.6.1"
+version = "0.7.0"
 description = "An MDN Layer for Keras"
 authors = [
     { name = "Charles Martin", email = "cpm@charlesmartin.au" },
