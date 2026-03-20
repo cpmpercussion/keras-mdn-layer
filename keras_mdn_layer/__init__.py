@@ -1,6 +1,8 @@
 """
 A Mixture Density Layer for Keras
-cpmpercussion: Charles Martin (University of Oslo) 2018
+cpmpercussion: 
+    Charles Martin (University of Oslo) 2018, (Australian National University) 2019+
+    https://charlesmartin.au
 https://github.com/cpmpercussion/keras-mdn-layer
 
 Hat tip to [Omimo's Keras MDN layer](https://github.com/omimo/Keras-MDN)
