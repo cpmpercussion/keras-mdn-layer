@@ -1,7 +1,7 @@
 [project]
 name = "keras-mdn-layer"
-version = "0.6.1"
-description = "An MDN Layer for Keras using TensorFlow's distributions module"
+version = "0.7.0-alpha"
+description = "An MDN Layer for Keras"
 authors = [
     { name = "Charles Martin", email = "cpm@charlesmartin.au" },
 ]
@@ -12,9 +12,7 @@ keywords = ["mixture density layer", "neural network", "machine learning"]
 classifiers = ["Topic :: Scientific/Engineering :: Artificial Intelligence"]
 dependencies = [
     "numpy>=1.26.4,<3.0",
-    "tensorflow-probability>=0.24,<1.0",
-    "tensorflow>=2.16.2,<3.0.0",
-    "tf-keras>=2.16.0,<3.0.0",
+    "keras>=3.0,<4.0",
 ]
 
 [project.urls]
@@ -31,6 +29,8 @@ pandas = "^2.2.2"
 svgwrite = "^1.4.3"
 black = "^26.3.1"
 coveralls = "^4.0.2"
+tensorflow = "^2.21.0"
+ai-edge-litert = "^2.1.2"
 
 [build-system]
 requires = ["poetry-core"]

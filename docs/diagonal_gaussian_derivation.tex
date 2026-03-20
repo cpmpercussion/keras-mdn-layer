@@ -1,0 +1,102 @@
+\documentclass[11pt]{article}
+\usepackage{amsmath, amssymb}
+\usepackage[margin=1in]{geometry}
+
+\title{Derivation of the Diagonal-Covariance Gaussian\\Log-Probability for MDN Loss}
+\author{keras-mdn-layer}
+\date{}
+
+\begin{document}
+\maketitle
+
+\section*{Starting Point: Bishop PRML Eq.~2.43}
+
+The multivariate Gaussian distribution in $D$ dimensions is:
+\begin{equation}
+    \mathcal{N}(\mathbf{y} \mid \boldsymbol{\mu}, \boldsymbol{\Sigma})
+    = \frac{1}{(2\pi)^{D/2}\,|\boldsymbol{\Sigma}|^{1/2}}
+      \exp\!\left\{
+        -\frac{1}{2}(\mathbf{y}-\boldsymbol{\mu})^\top
+        \boldsymbol{\Sigma}^{-1}
+        (\mathbf{y}-\boldsymbol{\mu})
+      \right\}
+    \tag{PRML 2.43}
+\end{equation}
+
+\section*{Diagonal Covariance Assumption}
+
+In a mixture density network we parameterise each component with a
+diagonal covariance matrix:
+\begin{equation}
+    \boldsymbol{\Sigma}
+    = \operatorname{diag}(\sigma_1^2,\, \sigma_2^2,\, \dots,\, \sigma_D^2)
+\end{equation}
+
+Three quantities simplify immediately:
+
+\paragraph{1.\ Determinant.}
+\begin{equation}
+    |\boldsymbol{\Sigma}|
+    = \prod_{d=1}^{D} \sigma_d^2
+    \qquad\Longrightarrow\qquad
+    |\boldsymbol{\Sigma}|^{1/2}
+    = \prod_{d=1}^{D} \sigma_d
+\end{equation}
+
+\paragraph{2.\ Inverse.}
+\begin{equation}
+    \boldsymbol{\Sigma}^{-1}
+    = \operatorname{diag}\!\left(
+        \frac{1}{\sigma_1^2},\, \dots,\, \frac{1}{\sigma_D^2}
+      \right)
+\end{equation}
+
+\paragraph{3.\ Quadratic form.}
+Because $\boldsymbol{\Sigma}^{-1}$ is diagonal, the matrix product
+reduces to an element-wise sum:
+\begin{equation}
+    (\mathbf{y}-\boldsymbol{\mu})^\top
+    \boldsymbol{\Sigma}^{-1}
+    (\mathbf{y}-\boldsymbol{\mu})
+    = \sum_{d=1}^{D}
+      \frac{(y_d - \mu_d)^2}{\sigma_d^2}
+\end{equation}
+
+\section*{Substitution}
+
+Substituting (2)--(4) into (PRML 2.43):
+\begin{equation}
+    \mathcal{N}(\mathbf{y} \mid \boldsymbol{\mu}, \boldsymbol{\Sigma})
+    = \frac{1}{(2\pi)^{D/2}\;\prod_{d}\sigma_d}
+      \;\exp\!\left\{
+        -\frac{1}{2}\sum_{d=1}^{D}
+        \left(\frac{y_d - \mu_d}{\sigma_d}\right)^{\!2}
+      \right\}
+\end{equation}
+
+\section*{Taking the Logarithm}
+
+\begin{equation}
+\boxed{
+    \log \mathcal{N}(\mathbf{y} \mid \boldsymbol{\mu}, \boldsymbol{\Sigma})
+    = \underbrace{-\frac{D}{2}\log(2\pi)}_{\text{normalisation}}
+      \;-\; \underbrace{\sum_{d=1}^{D}\log\sigma_d}_{\text{volume}}
+      \;-\; \underbrace{\frac{1}{2}\sum_{d=1}^{D}
+            \left(\frac{y_d - \mu_d}{\sigma_d}\right)^{\!2}}_{\text{squared Mahalanobis}}
+}
+\end{equation}
+
+\section*{Correspondence to Code}
+
+Each of the three terms maps directly to a line in
+\texttt{keras\_mdn\_layer/\_\_init\_\_.py}:
+
+\begin{verbatim}
+log_component = (
+    -0.5 * output_dim * math.log(2.0 * math.pi)              # -D/2 log(2pi)
+    - ops.sum(ops.log(sigma), axis=-1)                        # -sum_d log(sigma_d)
+    - 0.5 * ops.sum(ops.square((y_true - mu) / sigma), axis=-1)  # -1/2 sum_d (...)^2
+)
+\end{verbatim}
+
+\end{document}

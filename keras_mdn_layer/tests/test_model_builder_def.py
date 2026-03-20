@@ -1,4 +1,4 @@
-import tensorflow as tf
+import keras
 import keras_mdn_layer as mdn
 import numpy as np
 import click
@@ -21,7 +21,7 @@ def test_mdn_builder_function():
 
     def build_mdrnn_model(dimension: int, n_hidden_units: int, n_mixtures: int, n_layers: int, inference: bool, seq_length = 30):
         """Builds a Keras MDRNN model with specified parameters.
-        Can either be a training model or inference model which affects the configured 
+        Can either be a training model or inference model which affects the configured
         sequence length and whether a loss function is added.
         """
         # Set parameters for inference/training versions.
@@ -34,7 +34,7 @@ def test_mdn_builder_function():
             sequence_length = seq_length
             time_dist = True
         # inputs
-        data_input = tf.keras.layers.Input(
+        data_input = keras.layers.Input(
             shape=(sequence_length, dimension), name="inputs"
         )
         lstm_in = data_input  # starter input for lstm
@@ -49,19 +49,19 @@ def test_mdn_builder_function():
                 return_sequences = False
             state_input = None
             if state_input_output:
-                state_h_input = tf.keras.layers.Input(
+                state_h_input = keras.layers.Input(
                     shape=(n_hidden_units,), name=f"state_h_{layer_i}"
                 )
-                state_c_input = tf.keras.layers.Input(
+                state_c_input = keras.layers.Input(
                     shape=(n_hidden_units,), name=f"state_c_{layer_i}"
                 )
                 state_input = [state_h_input, state_c_input]
                 state_inputs += state_input
-            lstm_out, state_h_output, state_c_output = tf.keras.layers.LSTM(
+            lstm_out, state_h_output, state_c_output = keras.layers.LSTM(
                 n_hidden_units,
                 name=f"lstm_{layer_i}",
                 return_sequences=return_sequences,
-                return_state=True,  # state_input_output # better to keep these outputs and just not use.
+                return_state=True,
             )(lstm_in, initial_state=state_input)
             lstm_in = lstm_out
             state_outputs += [state_h_output, state_c_output]
@@ -69,10 +69,10 @@ def test_mdn_builder_function():
         # mdn layer
         mdn_layer = mdn.MDN(dimension, n_mixtures, name="mdn_outputs")
         click.secho(f"MDN layer type is: {type(mdn_layer)}", fg="blue")
-        click.secho(f"Is MDN a tf.keras.layer.Layer? {isinstance(mdn_layer, tf.keras.layers.Layer)}", fg="blue")
+        click.secho(f"Is MDN a keras.layers.Layer? {isinstance(mdn_layer, keras.layers.Layer)}", fg="blue")
         click.secho(f"MDN layer shape: {mdn_layer.compute_output_shape(lstm_out.shape)}", fg="blue")
         if time_dist:
-            mdn_layer = tf.keras.layers.TimeDistributed(mdn_layer, name="td_mdn")
+            mdn_layer = keras.layers.TimeDistributed(mdn_layer, name="td_mdn")
         mdn_out = mdn_layer(lstm_out)  # apply mdn
         if inference:
             # for inference, need to track state of the model
@@ -83,20 +83,18 @@ def test_mdn_builder_function():
             inputs = data_input
             outputs = mdn_out
         name = mdrnn_model_name(dimension, n_layers, n_hidden_units, n_mixtures)
-        new_model = tf.keras.models.Model(
+        new_model = keras.models.Model(
             inputs=inputs, outputs=outputs, name=name
         )
 
         if not inference:
             # only need loss function and compile when training
             loss_func = mdn.get_mixture_loss_func(dimension, n_mixtures)
-            optimizer = tf.keras.optimizers.Adam()
+            optimizer = keras.optimizers.Adam()
             new_model.compile(loss=loss_func, optimizer=optimizer)
-        # else:
-        #     new_model.compile()  # no loss or optimizer needed for inference.
         new_model.summary()
         return new_model
-    
+
     # run the tests.
     n_hidden_units = 32
     dimension = 8
@@ -105,7 +103,7 @@ def test_mdn_builder_function():
 
     # build a training model
     train_model = build_mdrnn_model(dimension, n_hidden_units, n_mixtures, n_layers=n_layers, inference=False, seq_length=50)
-    assert isinstance(train_model, tf.keras.models.Model)
+    assert isinstance(train_model, keras.models.Model)
     # build an inference model
     inference_model = build_mdrnn_model(dimension, n_hidden_units, n_mixtures, n_layers=n_layers, inference=True, seq_length = 1)
-    assert isinstance(inference_model, tf.keras.models.Model)
+    assert isinstance(inference_model, keras.models.Model)
