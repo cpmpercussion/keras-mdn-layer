@@ -1,5 +1,4 @@
-from tensorflow import keras
-import tensorflow as tf
+import keras
 import keras_mdn_layer as mdn
 import numpy as np
 import click
@@ -7,8 +6,8 @@ import click
 
 def test_elu_plus_one_plus_epsilon():
     """Test that the custom activation is always positive."""
-    x = tf.constant([-10.0, -1.0, 0.0, 1.0, 10.0])
-    result = mdn.elu_plus_one_plus_epsilon(x).numpy()
+    x = np.array([-10.0, -1.0, 0.0, 1.0, 10.0])
+    result = np.array(mdn.elu_plus_one_plus_epsilon(x))
     assert np.all(result > 0), "Activation should always be positive"
     # ELU(0) + 1 + eps should be ~1.0
     assert np.isclose(result[2], 1.0, atol=1e-6)
@@ -148,15 +147,14 @@ def test_loss_function_runs():
 
     # Build fake predictions: mus + sigmas + pi_logits
     batch_size = 4
-    mus = tf.zeros((batch_size, num_mixes * output_dim))
-    sigmas = tf.ones((batch_size, num_mixes * output_dim))
-    pi_logits = tf.zeros((batch_size, num_mixes))
-    y_pred = tf.concat([mus, sigmas, pi_logits], axis=-1)
-    y_true = tf.zeros((batch_size, output_dim))
+    mus = np.zeros((batch_size, num_mixes * output_dim))
+    sigmas = np.ones((batch_size, num_mixes * output_dim))
+    pi_logits = np.zeros((batch_size, num_mixes))
+    y_pred = np.concatenate([mus, sigmas, pi_logits], axis=-1).astype(np.float32)
+    y_true = np.zeros((batch_size, output_dim)).astype(np.float32)
 
-    loss = loss_func(y_true, y_pred)
-    assert loss.numpy().shape == ()  # scalar
-    assert np.isfinite(loss.numpy())
+    loss = float(loss_func(y_true, y_pred))
+    assert np.isfinite(loss)
 
 
 def test_loss_function_decreases_with_closer_predictions():
@@ -165,17 +163,17 @@ def test_loss_function_decreases_with_closer_predictions():
     num_mixes = 1
     loss_func = mdn.get_mixture_loss_func(output_dim, num_mixes)
 
-    y_true = tf.constant([[5.0]])
-    sigmas = tf.constant([[1.0]])
-    pi_logits = tf.constant([[0.0]])
+    y_true = np.array([[5.0]], dtype=np.float32)
+    sigmas = np.array([[1.0]], dtype=np.float32)
+    pi_logits = np.array([[0.0]], dtype=np.float32)
 
     # Prediction close to true
-    y_pred_close = tf.concat([tf.constant([[5.0]]), sigmas, pi_logits], axis=-1)
+    y_pred_close = np.concatenate([np.array([[5.0]]), sigmas, pi_logits], axis=-1).astype(np.float32)
     # Prediction far from true
-    y_pred_far = tf.concat([tf.constant([[100.0]]), sigmas, pi_logits], axis=-1)
+    y_pred_far = np.concatenate([np.array([[100.0]]), sigmas, pi_logits], axis=-1).astype(np.float32)
 
-    loss_close = loss_func(y_true, y_pred_close).numpy()
-    loss_far = loss_func(y_true, y_pred_far).numpy()
+    loss_close = float(loss_func(y_true, y_pred_close))
+    loss_far = float(loss_func(y_true, y_pred_far))
     assert loss_close < loss_far
 
 
@@ -186,14 +184,14 @@ def test_mixture_sampling_fun():
     sampling_func = mdn.get_mixture_sampling_fun(output_dim, num_mixes)
 
     batch_size = 4
-    mus = tf.zeros((batch_size, num_mixes * output_dim))
-    sigmas = tf.ones((batch_size, num_mixes * output_dim))
-    pi_logits = tf.zeros((batch_size, num_mixes))
-    y_pred = tf.concat([mus, sigmas, pi_logits], axis=-1)
+    mus = np.zeros((batch_size, num_mixes * output_dim))
+    sigmas = np.ones((batch_size, num_mixes * output_dim))
+    pi_logits = np.zeros((batch_size, num_mixes))
+    y_pred = np.concatenate([mus, sigmas, pi_logits], axis=-1).astype(np.float32)
 
-    samples = sampling_func(y_pred)
+    samples = np.array(sampling_func(y_pred))
     assert samples.shape == (batch_size, output_dim)
-    assert np.all(np.isfinite(samples.numpy()))
+    assert np.all(np.isfinite(samples))
 
 
 def test_mixture_mse_accuracy():
@@ -203,26 +201,26 @@ def test_mixture_mse_accuracy():
     mse_func = mdn.get_mixture_mse_accuracy(output_dim, num_mixes)
 
     batch_size = 4
-    mus = tf.zeros((batch_size, num_mixes * output_dim))
-    sigmas = tf.ones((batch_size, num_mixes * output_dim)) * 0.001  # very small sigma
-    pi_logits = tf.zeros((batch_size, num_mixes))
-    y_pred = tf.concat([mus, sigmas, pi_logits], axis=-1)
-    y_true = tf.zeros((batch_size, output_dim))
+    mus = np.zeros((batch_size, num_mixes * output_dim))
+    sigmas = np.ones((batch_size, num_mixes * output_dim)) * 0.001  # very small sigma
+    pi_logits = np.zeros((batch_size, num_mixes))
+    y_pred = np.concatenate([mus, sigmas, pi_logits], axis=-1).astype(np.float32)
+    y_true = np.zeros((batch_size, output_dim)).astype(np.float32)
 
-    mse = mse_func(y_true, y_pred)
+    mse = np.array(mse_func(y_true, y_pred))
     assert mse.shape == (batch_size,)
-    assert np.all(np.isfinite(mse.numpy()))
-    assert np.all(mse.numpy() >= 0)
+    assert np.all(np.isfinite(mse))
+    assert np.all(mse >= 0)
 
 
 def test_training_reduces_loss():
     """Test that training a simple MDN model actually reduces loss."""
     np.random.seed(42)
-    tf.random.set_seed(42)
+    keras.utils.set_random_seed(42)
     N_MIXES = 3
 
     model = keras.Sequential()
-    model.add(keras.layers.Dense(15, batch_input_shape=(None, 1), activation='relu'))
+    model.add(keras.layers.Dense(15, input_shape=(1,), activation='relu'))
     model.add(mdn.MDN(1, N_MIXES))
     model.compile(loss=mdn.get_mixture_loss_func(1, N_MIXES), optimizer=keras.optimizers.Adam(learning_rate=0.01))
 
@@ -239,7 +237,7 @@ def test_multidimensional_output():
     N_MIXES = 3
     OUTPUT_DIM = 5
     model = keras.Sequential()
-    model.add(keras.layers.Dense(10, batch_input_shape=(None, 2), activation='relu'))
+    model.add(keras.layers.Dense(10, input_shape=(2,), activation='relu'))
     model.add(mdn.MDN(OUTPUT_DIM, N_MIXES))
     model.compile(loss=mdn.get_mixture_loss_func(OUTPUT_DIM, N_MIXES), optimizer='adam')
 
@@ -260,7 +258,7 @@ def test_build_mdn():
     N_HIDDEN = 5
     N_MIXES = 5
     model = keras.Sequential()
-    model.add(keras.layers.Dense(N_HIDDEN, batch_input_shape=(None, 1), activation='relu'))
+    model.add(keras.layers.Dense(N_HIDDEN, input_shape=(1,), activation='relu'))
     model.add(keras.layers.Dense(N_HIDDEN, activation='relu'))
     model.add(mdn.MDN(1, N_MIXES))
     model.compile(loss=mdn.get_mixture_loss_func(1, N_MIXES), optimizer=keras.optimizers.Adam())
@@ -277,7 +275,7 @@ def test_number_of_weights():
     predictions = m(x)
     model = keras.Model(inputs=inputs, outputs=predictions)
     model.compile(loss=mdn.get_mixture_loss_func(1, N_MIXES), optimizer=keras.optimizers.Adam())
-    num_mdn_params = np.sum([w.get_shape().num_elements() for w in m.trainable_weights])
+    num_mdn_params = np.sum([np.prod(w.shape) for w in m.trainable_weights])
     assert (num_mdn_params == 90)
 
 
@@ -286,7 +284,7 @@ def test_save_mdn():
     N_HIDDEN = 5
     N_MIXES = 5
     model = keras.Sequential()
-    model.add(keras.layers.Dense(N_HIDDEN, batch_input_shape=(None, 1), activation='relu'))
+    model.add(keras.layers.Dense(N_HIDDEN, input_shape=(1,), activation='relu'))
     model.add(mdn.MDN(1, N_MIXES))
     model.compile(loss=mdn.get_mixture_loss_func(1, N_MIXES), optimizer=keras.optimizers.Adam())
     model.save('test_save.keras', overwrite=True)
@@ -300,7 +298,7 @@ def test_output_shapes():
     N_MIXES = 10
     N_DIMENSION = 7
 
-    # set up a 1-layer MDRNN 
+    # set up a 1-layer MDRNN
     inputs = keras.layers.Input(shape=(1,N_DIMENSION))
     lstm_1_state_h_input = keras.layers.Input(shape=(N_HIDDEN,))
     lstm_1_state_c_input = keras.layers.Input(shape=(N_HIDDEN,))
@@ -314,7 +312,7 @@ def test_output_shapes():
     starting_input = np.zeros((1, 1, N_DIMENSION), dtype=np.float32)
     initial_state = [np.zeros((1,N_HIDDEN), dtype=np.float32), np.zeros((1,N_HIDDEN), dtype=np.float32)]
     output_list = decoder([starting_input] + initial_state) # run the network
-    mdn_parameters = output_list[0][0].numpy()
+    mdn_parameters = np.array(output_list[0][0])
 
     # sample from the output to test sampling functions
     generated_sample = mdn.sample_from_output(mdn_parameters, N_DIMENSION, N_MIXES)
@@ -379,7 +377,7 @@ def test_mdn_builder_function():
 
     def build_mdrnn_model(dimension: int, n_hidden_units: int, n_mixtures: int, n_layers: int, inference: bool, seq_length = 30):
         """Builds a Keras MDRNN model with specified parameters.
-        Can either be a training model or inference model which affects the configured 
+        Can either be a training model or inference model which affects the configured
         sequence length and whether a loss function is added.
         """
         # Set parameters for inference/training versions.
@@ -419,7 +417,7 @@ def test_mdn_builder_function():
                 n_hidden_units,
                 name=f"lstm_{layer_i}",
                 return_sequences=return_sequences,
-                return_state=True,  # state_input_output # better to keep these outputs and just not use.
+                return_state=True,
             )(lstm_in, initial_state=state_input)
             lstm_in = lstm_out
             state_outputs += [state_h_output, state_c_output]
@@ -427,7 +425,7 @@ def test_mdn_builder_function():
         # mdn layer
         mdn_layer = mdn.MDN(dimension, n_mixtures, name="mdn_outputs")
         click.secho(f"MDN layer type is: {type(mdn_layer)}", fg="blue")
-        click.secho(f"Is MDN a keras.layer.Layer? {isinstance(mdn_layer, keras.layers.Layer)}", fg="blue")
+        click.secho(f"Is MDN a keras.layers.Layer? {isinstance(mdn_layer, keras.layers.Layer)}", fg="blue")
         click.secho(f"MDN layer shape: {mdn_layer.compute_output_shape(lstm_out.shape)}", fg="blue")
         if time_dist:
             mdn_layer = keras.layers.TimeDistributed(mdn_layer, name="td_mdn")
@@ -450,11 +448,9 @@ def test_mdn_builder_function():
             loss_func = mdn.get_mixture_loss_func(dimension, n_mixtures)
             optimizer = keras.optimizers.Adam()
             new_model.compile(loss=loss_func, optimizer=optimizer)
-        # else:
-        #     new_model.compile()  # no loss or optimizer needed for inference.
         new_model.summary()
         return new_model
-    
+
     # run the tests.
     n_hidden_units = 32
     dimension = 8

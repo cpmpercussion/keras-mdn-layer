@@ -1,8 +1,5 @@
-from tensorflow import keras
-from tensorflow.keras import backend as K
-from tensorflow.keras.layers import Dense, Input
+import keras
 import numpy as np
-import tensorflow as tf
 import math
 import h5py
 import random
@@ -12,27 +9,19 @@ import keras_mdn_layer as mdn
 import matplotlib.pyplot as plt
 
 
-#input_colour = 'darkblue'
-#gen_colour = 'firebrick'
-#plt.style.use('seaborn-talk')
 import os
 os.environ["CUDA_VISIBLE_DEVICES"]="1"
-
-config = tf.ConfigProto()
-config.gpu_options.allow_growth = True
-sess = tf.Session(config=config)
-K.set_session(sess)
 
 # Download microjam performance data if needed.
 import urllib.request
 url = 'https://github.com/cpmpercussion/creative-prediction-datasets/raw/main/datasets/TinyPerformanceCorpus.h5'
-urllib.request.urlretrieve(url, './TinyPerformanceCorpus.h5')  
+urllib.request.urlretrieve(url, './TinyPerformanceCorpus.h5')
 
 
 # ## Helper functions for touchscreen performances
-# 
+#
 # We need a few helper functions for managing performances:
-#     
+#
 # - Convert performances to and from pandas dataframes.
 # - Generate random touches.
 # - Sample whole performances from scratch and from a priming performance.
@@ -104,7 +93,7 @@ def generate_random_tiny_performance(model, n_mixtures, first_touch, time_limit=
     previous_touch = first_touch
     performance = [previous_touch.reshape((out_dim,))]
     while (steps < steps_limit and time < time_limit):
-        params = model.predict(previous_touch.reshape(1,1,out_dim) * SCALE_FACTOR)
+        params = model.predict(previous_touch.reshape(1,1,out_dim) * SCALE_FACTOR, verbose=0)
         previous_touch = mdn.sample_from_output(params[0], out_dim, n_mixtures, temp=temp, sigma_temp=sigma_temp) / SCALE_FACTOR
         output_touch = previous_touch.reshape(out_dim,)
         output_touch = constrain_touch(output_touch, with_moving=predict_moving)
@@ -124,12 +113,12 @@ def condition_and_generate(model, perf, n_mixtures, time_limit=5.0, steps_limit=
     steps = 0
     # condition
     for touch in perf:
-        params = model.predict(touch.reshape(1, 1, out_dim) * SCALE_FACTOR)
+        params = model.predict(touch.reshape(1, 1, out_dim) * SCALE_FACTOR, verbose=0)
         previous_touch = mdn.sample_from_output(params[0], out_dim, n_mixtures, temp=temp, sigma_temp=sigma_temp) / SCALE_FACTOR
         output = [previous_touch.reshape((out_dim,))]
     # generate
     while (steps < steps_limit and time < time_limit):
-        params = model.predict(previous_touch.reshape(1, 1, out_dim) * SCALE_FACTOR)
+        params = model.predict(previous_touch.reshape(1, 1, out_dim) * SCALE_FACTOR, verbose=0)
         previous_touch = mdn.sample_from_output(params[0], out_dim, n_mixtures, temp=temp, sigma_temp=sigma_temp) / SCALE_FACTOR
         output_touch = previous_touch.reshape(out_dim,)
         output_touch = constrain_touch(output_touch, with_moving=predict_moving)
@@ -183,7 +172,7 @@ def plot_double_2d(perf1, perf2, name="foo", saving=False, figsize=(8, 8)):
         fig.savefig(name+".png", bbox_inches='tight')
 
 # # Load up the Dataset:
-# 
+#
 # The dataset consists of around 1000 5-second performances from the MicroJam app.
 # This is in a sequence of points consisting of an x-location, a y-location, and a time-delta from the previous point.
 # When the user swipes, the time-delta is very small, if they tap it's quite large.
@@ -208,17 +197,17 @@ pd.DataFrame(microjam_corpus).describe()
 #plot_2D(perf_array_to_df(microjam_corpus[100:200]))
 
 # ## MDN RNN
-# 
+#
 # - Now we're going to build an MDN-RNN to predict MicroJam data.
 # - The architecture will be:
 #     - 3 inputs (x, y, dt)
 #     - 2 layers of 256 LSTM cells each
 #     - MDN Layer with 3 dimensions and 5 mixtures.
 #     - Training model will have a sequence length of 30 (prediction model: 1 in, 1 out)
-#     
+#
 # ![RoboJam MDN RNN Model](https://preview.ibb.co/cKZk9T/robojam_mdn_diagram.png)
-#     
-# - Here's the model parameters and training data preparation. 
+#
+# - Here's the model parameters and training data preparation.
 # - We end up with 172K training examples.
 
 # In[ ]:
@@ -232,7 +221,7 @@ EPOCHS = 100
 VAL_SPLIT=0.15
 
 # Set random seed for reproducibility
-SEED = 2345  
+SEED = 2345
 random.seed(SEED)
 np.random.seed(SEED)
 
@@ -262,14 +251,14 @@ OUTPUT_DIMENSION = 3
 NUMBER_MIXTURES = 5
 
 model = keras.Sequential()
-model.add(keras.layers.LSTM(HIDDEN_UNITS, batch_input_shape=(None,SEQ_LEN,OUTPUT_DIMENSION), return_sequences=True))
+model.add(keras.layers.LSTM(HIDDEN_UNITS, input_shape=(SEQ_LEN,OUTPUT_DIMENSION), return_sequences=True))
 model.add(keras.layers.LSTM(HIDDEN_UNITS))
 model.add(mdn.MDN(OUTPUT_DIMENSION, NUMBER_MIXTURES))
 model.compile(loss=mdn.get_mixture_loss_func(OUTPUT_DIMENSION,NUMBER_MIXTURES), optimizer=keras.optimizers.Adam())
 model.summary()
 
 # Define callbacks
-filepath="robojam_mdrnn-E{epoch:02d}-VL{val_loss:.2f}.h5"
+filepath="robojam_mdrnn-E{epoch:02d}-VL{val_loss:.2f}.keras"
 checkpoint = keras.callbacks.ModelCheckpoint(filepath, save_weights_only=True, verbose=1, save_best_only=True, mode='min')
 early_stopping = keras.callbacks.EarlyStopping(monitor='val_loss', mode='min', verbose=1, patience=10)
 callbacks = [keras.callbacks.TerminateOnNaN(), checkpoint, early_stopping]
@@ -277,7 +266,7 @@ callbacks = [keras.callbacks.TerminateOnNaN(), checkpoint, early_stopping]
 history = model.fit(X, y, batch_size=BATCH_SIZE, epochs=EPOCHS, callbacks=callbacks, validation_split=VAL_SPLIT)
 
 # Save the Model
-model.save('robojam-mdrnn.h5')  # creates a HDF5 file of the model
+model.save('robojam-mdrnn.keras')
 
 # Plot the loss
 #plt.figure(figsize=(10, 5))
@@ -289,21 +278,22 @@ model.save('robojam-mdrnn.h5')  # creates a HDF5 file of the model
 
 
 # # Try out the model
-# 
+#
 # - Let's try out the model
 # - First we will load up a decoding model with a sequence length of 1.
 # - The weights are loaded from a the trained model file.
 
 # Decoding Model
 decoder = keras.Sequential()
-decoder.add(keras.layers.LSTM(HIDDEN_UNITS, batch_input_shape=(1,1,OUTPUT_DIMENSION), return_sequences=True, stateful=True))
+decoder.add(keras.layers.Input(batch_shape=(1, 1, OUTPUT_DIMENSION)))
+decoder.add(keras.layers.LSTM(HIDDEN_UNITS, return_sequences=True, stateful=True))
 decoder.add(keras.layers.LSTM(HIDDEN_UNITS, stateful=True))
 decoder.add(mdn.MDN(OUTPUT_DIMENSION, NUMBER_MIXTURES))
 decoder.compile(loss=mdn.get_mixture_loss_func(OUTPUT_DIMENSION,NUMBER_MIXTURES), optimizer=keras.optimizers.Adam())
 decoder.summary()
 
 # decoder.set_weights(model.get_weights())
-decoder.load_weights("robojam-mdrnn.h5")
+decoder.load_weights("robojam-mdrnn.keras")
 
 
 # Plotting some conditioned performances.
@@ -311,13 +301,13 @@ length = 100
 t = random.randint(0,len(microjam_corpus)-length)
 ex =  microjam_corpus[t:t+length]  #sequences[600]
 
-decoder.reset_states()
+[layer.reset_state() for layer in decoder.layers if hasattr(layer, 'reset_state')]
 p = condition_and_generate(decoder, ex, NUMBER_MIXTURES, temp=1.5, sigma_temp=0.05)
 #plot_double_2d(perf_array_to_df(ex), perf_array_to_df(p), figsize=(4,4))
 
 # We can also generate unconditioned performances from a random starting point.
 
-decoder.reset_states()
+[layer.reset_state() for layer in decoder.layers if hasattr(layer, 'reset_state')]
 t = random_touch()
 p = generate_random_tiny_performance(decoder, NUMBER_MIXTURES, t, temp=1.2, sigma_temp=0.01)
 #plot_2D(perf_array_to_df(p), figsize=(4,4))
